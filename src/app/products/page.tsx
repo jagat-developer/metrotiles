@@ -8,6 +8,7 @@ import { SectionIntro } from "@/components/SectionIntro";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
 import { globalFaqs, productCategories } from "@/lib/data";
+import { liveCatalogTotals } from "@/lib/liveCatalog";
 import {
   breadcrumbJsonLd,
   collectionJsonLd,
@@ -80,7 +81,7 @@ export default function ProductsPage() {
           <SectionIntro
             eyebrow="Category showroom"
             title="Choose by category, collection, room, and finish."
-            description="Metro's source catalog includes top product categories plus brand and series collections for tiles, vinyl, laminate, engineered hardwood, solid hardwood, vanity, wall tile, and bathroom accessories."
+            description={`Metro's source catalog snapshot includes ${liveCatalogTotals.products} live products across ${liveCatalogTotals.categories} categories and collections for tiles, vinyl, laminate, engineered hardwood, solid hardwood, vanity, wall tile, and bathroom accessories.`}
           />
           <div className="mt-10">
             <ProductGrid products={productCategories} />

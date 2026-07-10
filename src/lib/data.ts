@@ -373,6 +373,104 @@ export const productCategories: ProductCategory[] = [
         sourceUrl: metroSource(
           "/product-category/engineered-hardwood/northernest/"
         ),
+        collections: [
+          {
+            slug: "european-oak-collection",
+            title: "EUROPEAN OAK COLLECTION",
+            count: 6,
+            eyebrow: "Northernest series",
+            image: "/images/live-catalog/cat-54-european-oak-collection.jpg",
+            description:
+              "European Oak Collection engineered hardwood selections from the Northernest live catalog.",
+            sourceUrl: metroSource(
+              "/product-category/engineered-hardwood/northernest/european-oak-collection/"
+            ),
+          },
+          {
+            slug: "inspiration-series",
+            title: "INSPIRATION SERIES",
+            count: 5,
+            eyebrow: "Northernest series",
+            image: "/images/live-catalog/cat-57-inspiration-series.jpg",
+            description:
+              "Inspiration Series engineered hardwood looks from the Northernest live catalog.",
+            sourceUrl: metroSource(
+              "/product-category/engineered-hardwood/northernest/inspiration-series/"
+            ),
+          },
+          {
+            slug: "nation-collection",
+            title: "NATION COLLECTION",
+            count: 6,
+            eyebrow: "Northernest series",
+            image: "/images/live-catalog/cat-49-nation-collection.jpg",
+            description:
+              "Nation Collection engineered hardwood selections from the Northernest live catalog.",
+            sourceUrl: metroSource(
+              "/product-category/engineered-hardwood/northernest/nation-collection/"
+            ),
+          },
+          {
+            slug: "oak",
+            title: "OAK",
+            count: 5,
+            eyebrow: "Northernest series",
+            image: "/images/live-catalog/cat-59-oak.jpg",
+            description:
+              "Oak engineered hardwood selections from the Northernest live catalog.",
+            sourceUrl: metroSource(
+              "/product-category/engineered-hardwood/northernest/oak/"
+            ),
+          },
+          {
+            slug: "performance-series",
+            title: "PERFORMANCE SERIES",
+            count: 7,
+            eyebrow: "Northernest series",
+            image: "/images/live-catalog/cat-56-performance-series.jpg",
+            description:
+              "Performance Series engineered hardwood options from the Northernest live catalog.",
+            sourceUrl: metroSource(
+              "/product-category/engineered-hardwood/northernest/performance-series/"
+            ),
+          },
+          {
+            slug: "vintage-series",
+            title: "VINTAGE SERIES",
+            count: 14,
+            eyebrow: "Northernest series",
+            image: "/images/live-catalog/cat-55-vintage-series.jpg",
+            description:
+              "Vintage Series engineered hardwood selections from the Northernest live catalog.",
+            sourceUrl: metroSource(
+              "/product-category/engineered-hardwood/northernest/vintage-series/"
+            ),
+          },
+          {
+            slug: "we-the-north",
+            title: "WE THE NORTH",
+            count: 12,
+            eyebrow: "Northernest series",
+            image: "/images/live-catalog/cat-53-we-the-north.jpeg",
+            description:
+              "We The North engineered hardwood selections from the Northernest live catalog.",
+            sourceUrl: metroSource(
+              "/product-category/engineered-hardwood/northernest/we-the-north/"
+            ),
+          },
+          {
+            slug: "winery-collection",
+            title: "WINERY COLLECTION",
+            count: 6,
+            eyebrow: "Northernest series",
+            image: "/images/live-catalog/cat-58-winery-collection.jpg",
+            description:
+              "Winery Collection engineered hardwood selections from the Northernest live catalog.",
+            sourceUrl: metroSource(
+              "/product-category/engineered-hardwood/northernest/winery-collection/"
+            ),
+          },
+        ],
       },
       {
         slug: "toucan",

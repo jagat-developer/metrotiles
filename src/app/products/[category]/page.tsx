@@ -1,7 +1,11 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { CollectionGrid, FeaturedItemGrid } from "@/components/CardGrids";
+import {
+  CollectionGrid,
+  FeaturedItemGrid,
+  LiveProductGrid,
+} from "@/components/CardGrids";
 import {
   CatalogSnapshot,
   ContactCTA,
@@ -15,6 +19,7 @@ import { SectionIntro } from "@/components/SectionIntro";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
 import { getProduct, productCategories, services } from "@/lib/data";
+import { getLiveProductsForRoute } from "@/lib/liveCatalog";
 import {
   breadcrumbJsonLd,
   collectionJsonLd,
@@ -89,6 +94,12 @@ export default async function ProductCategoryPage({ params }: ProductPageProps) 
     notFound();
   }
 
+  const liveProducts = getLiveProductsForRoute(product.slug);
+  const liveProductItems = liveProducts.map((item) => ({
+    name: item.name,
+    description: `Source-backed ${product.title.toLowerCase()} selection listed in Metro's live catalog.`,
+    path: `/products/${product.slug}`,
+  }));
   const breadcrumbs = [
     { label: "Home", href: "/" },
     { label: "Products", href: "/products" },
@@ -100,6 +111,7 @@ export default async function ProductCategoryPage({ params }: ProductPageProps) 
       description: collection.description,
       path: `/products/${product.slug}/${collection.slug}`,
     })) ??
+    (liveProductItems.length ? liveProductItems : undefined) ??
     product.featuredItems?.map((item) => ({
       name: item.title,
       description: item.description,
@@ -148,9 +160,13 @@ export default async function ProductCategoryPage({ params }: ProductPageProps) 
         eyebrow="Showroom catalog"
         title={`A clearer way to shop ${product.title}.`}
         description={`Metro lists ${product.count} items in this category on the current source catalog. Use the collection families and preview styles below to narrow the direction before visiting the Brampton showroom.`}
-        tags={(product.collections ?? product.featuredItems ?? [])
+        tags={(product.collections ?? [])
           .map((item) => item.title)
-          .concat(product.useCases)}
+          .concat(
+            product.collections?.length
+              ? product.useCases
+              : liveProducts.slice(0, 8).map((item) => item.name)
+          )}
         stats={[
           {
             label: "Catalog items",
@@ -160,7 +176,8 @@ export default async function ProductCategoryPage({ params }: ProductPageProps) 
           {
             label: product.collections?.length ? "Collections" : "Previews",
             value: String(
-              product.collections?.length ?? product.featuredItems?.length ?? 0
+              product.collections?.length ??
+                (liveProducts.length || product.featuredItems?.length || 0)
             ),
             detail: product.collections?.length
               ? "Organized families to compare by brand, series, or product type."
@@ -193,7 +210,31 @@ export default async function ProductCategoryPage({ params }: ProductPageProps) 
         </section>
       ) : null}
 
-      {product.featuredItems?.length ? (
+      {liveProducts.length ? (
+        <section className="bg-white py-16 sm:py-20">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <SectionIntro
+              eyebrow="Live product catalog"
+              title={
+                product.collections?.length
+                  ? `Preview source-backed ${product.title} products.`
+                  : `Browse live ${product.title} products.`
+              }
+              description={
+                product.collections?.length
+                  ? "These cards are pulled from Metro's current live catalog as a quick preview before choosing a focused collection."
+                  : "These product cards come from Metro's current live catalog so this page reflects the real showroom product list more closely."
+              }
+            />
+            <div className="mt-10">
+              <LiveProductGrid
+                items={liveProducts}
+                limit={product.collections?.length ? 12 : undefined}
+              />
+            </div>
+          </div>
+        </section>
+      ) : product.featuredItems?.length ? (
         <section className="bg-[#faf9f6] py-16 sm:py-20">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <SectionIntro

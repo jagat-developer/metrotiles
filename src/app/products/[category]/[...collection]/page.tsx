@@ -1,7 +1,11 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { CollectionGrid, FeaturedItemGrid } from "@/components/CardGrids";
+import {
+  CollectionGrid,
+  FeaturedItemGrid,
+  LiveProductGrid,
+} from "@/components/CardGrids";
 import {
   CatalogSnapshot,
   ContactCTA,
@@ -20,6 +24,7 @@ import {
   productCollectionPath,
   services,
 } from "@/lib/data";
+import { getLiveProductsForRoute } from "@/lib/liveCatalog";
 import {
   breadcrumbJsonLd,
   collectionJsonLd,
@@ -94,23 +99,26 @@ export default async function ProductCollectionPage({
 
   const { product, collection, trail } = data;
   const currentPath = productCollectionPath(product.slug, collectionSlugs);
+  const liveProducts = getLiveProductsForRoute(product.slug, collectionSlugs);
   const parentPath =
     collectionSlugs.length > 1
       ? productCollectionPath(product.slug, collectionSlugs.slice(0, -1))
       : `/products/${product.slug}`;
   const previewItems =
-    collection.featuredItems ??
-    (collection.collections?.length
+    liveProducts.length > 0
       ? []
-      : [
-          {
-            title: collection.title,
-            image: collection.image,
-            sourceUrl: collection.sourceUrl,
-            description:
-              "Source-backed collection available to review with Metro's showroom team.",
-          },
-        ]);
+      : collection.featuredItems ??
+        (collection.collections?.length
+          ? []
+          : [
+              {
+                title: collection.title,
+                image: collection.image,
+                sourceUrl: collection.sourceUrl,
+                description:
+                  "Source-backed collection available to review with Metro's showroom team.",
+              },
+            ]);
   const breadcrumbs = [
     { label: "Home", href: "/" },
     { label: "Products", href: "/products" },
@@ -126,6 +134,13 @@ export default async function ProductCollectionPage({
       description: item.description,
       path: `${currentPath}/${item.slug}`,
     })) ??
+    (liveProducts.length
+      ? liveProducts.map((item) => ({
+          name: item.name,
+          description: `Source-backed ${collection.title} selection listed in Metro's live catalog.`,
+          path: currentPath,
+        }))
+      : undefined) ??
     previewItems.map((item) => ({
       name: item.title,
       description: item.description,
@@ -194,7 +209,15 @@ export default async function ProductCollectionPage({
         eyebrow="Collection guide"
         title={`${collection.title} selections, organized for showroom review.`}
         description={`Metro lists ${collection.count} items in this collection on the current source catalog. The page highlights the most useful series, previews, and next steps before an in-person comparison.`}
-        tags={(collection.collections ?? previewItems).map((item) => item.title)}
+        tags={(collection.collections ?? [])
+          .map((item) => item.title)
+          .concat(
+            collection.collections?.length
+              ? []
+              : liveProducts.length
+                ? liveProducts.slice(0, 10).map((item) => item.name)
+                : previewItems.map((item) => item.title)
+          )}
         stats={[
           {
             label: "Catalog items",
@@ -203,7 +226,10 @@ export default async function ProductCollectionPage({
           },
           {
             label: collection.collections?.length ? "Subcollections" : "Previews",
-            value: String(collection.collections?.length ?? previewItems.length),
+            value: String(
+              collection.collections?.length ??
+                (liveProducts.length || previewItems.length)
+            ),
             detail: collection.collections?.length
               ? "Series or families to compare before choosing a finish."
               : "Visible selections from the live Metro catalog.",
@@ -234,7 +260,31 @@ export default async function ProductCollectionPage({
         </section>
       ) : null}
 
-      {previewItems.length ? (
+      {liveProducts.length ? (
+        <section className="bg-white py-16 sm:py-20">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <SectionIntro
+              eyebrow="Live product catalog"
+              title={
+                collection.collections?.length
+                  ? `Preview ${collection.title} products.`
+                  : `Browse ${collection.title} products.`
+              }
+              description={
+                collection.collections?.length
+                  ? "These source-backed products are shown as a quick preview before choosing a tighter series."
+                  : "These product cards come from Metro's current live catalog and keep the collection aligned with the real product list."
+              }
+            />
+            <div className="mt-10">
+              <LiveProductGrid
+                items={liveProducts}
+                limit={collection.collections?.length ? 12 : undefined}
+              />
+            </div>
+          </div>
+        </section>
+      ) : previewItems.length ? (
         <section className="bg-[#faf9f6] py-16 sm:py-20">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <SectionIntro
