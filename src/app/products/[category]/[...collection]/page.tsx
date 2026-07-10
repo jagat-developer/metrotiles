@@ -104,21 +104,21 @@ export default async function ProductCollectionPage({
     collectionSlugs.length > 1
       ? productCollectionPath(product.slug, collectionSlugs.slice(0, -1))
       : `/products/${product.slug}`;
-  const previewItems =
-    liveProducts.length > 0
+  const sourcePreviewItems =
+    collection.featuredItems ??
+    (collection.collections?.length
       ? []
-      : collection.featuredItems ??
-        (collection.collections?.length
-          ? []
-          : [
-              {
-                title: collection.title,
-                image: collection.image,
-                sourceUrl: collection.sourceUrl,
-                description:
-                  "Source-backed collection available to review with Metro's showroom team.",
-              },
-            ]);
+      : [
+          {
+            title: collection.title,
+            image: collection.image,
+            sourceUrl: collection.sourceUrl,
+            description:
+              "Source-backed collection available to review with Metro's showroom team.",
+          },
+        ]);
+  const previewItems =
+    liveProducts.length > 0 ? [] : sourcePreviewItems;
   const breadcrumbs = [
     { label: "Home", href: "/" },
     { label: "Products", href: "/products" },
@@ -205,48 +205,11 @@ export default async function ProductCollectionPage({
         </div>
       </section>
 
-      <CatalogSnapshot
-        eyebrow="Collection guide"
-        title={`${collection.title} selections, organized for showroom review.`}
-        description={`Metro lists ${collection.count} items in this collection on the current source catalog. The page highlights the most useful series, previews, and next steps before an in-person comparison.`}
-        tags={(collection.collections ?? [])
-          .map((item) => item.title)
-          .concat(
-            collection.collections?.length
-              ? []
-              : liveProducts.length
-                ? liveProducts.slice(0, 10).map((item) => item.name)
-                : previewItems.map((item) => item.title)
-          )}
-        stats={[
-          {
-            label: "Catalog items",
-            value: String(collection.count),
-            detail: "Current source-catalog count for this collection.",
-          },
-          {
-            label: collection.collections?.length ? "Subcollections" : "Previews",
-            value: String(
-              collection.collections?.length ??
-                (liveProducts.length || previewItems.length)
-            ),
-            detail: collection.collections?.length
-              ? "Series or families to compare before choosing a finish."
-              : "Visible selections from the live Metro catalog.",
-          },
-          {
-            label: "Category",
-            value: product.title,
-            detail: `Part of Metro's ${product.title.toLowerCase()} showroom catalog.`,
-          },
-        ]}
-      />
-
       {collection.collections?.length ? (
         <section className="bg-[#faf9f6] py-16 sm:py-20">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <SectionIntro
-              eyebrow="Subcollections"
+              eyebrow="Source catalog"
               title={`Browse ${collection.title} series.`}
               description="Nested collections follow Metro's live catalog structure and keep browsing focused on real showroom categories."
             />
@@ -255,6 +218,19 @@ export default async function ProductCollectionPage({
                 collections={collection.collections}
                 basePath={currentPath}
               />
+            </div>
+          </div>
+        </section>
+      ) : sourcePreviewItems.length ? (
+        <section className="bg-[#faf9f6] py-16 sm:py-20">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <SectionIntro
+              eyebrow="Source catalog"
+              title={`Review ${collection.title} source selections.`}
+              description="These source-backed cards come from Metro's catalog structure before the live product list, so the page starts with the showroom context first."
+            />
+            <div className="mt-10">
+              <FeaturedItemGrid items={sourcePreviewItems} />
             </div>
           </div>
         </section>
@@ -284,20 +260,44 @@ export default async function ProductCollectionPage({
             </div>
           </div>
         </section>
-      ) : previewItems.length ? (
-        <section className="bg-[#faf9f6] py-16 sm:py-20">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <SectionIntro
-              eyebrow="Showroom previews"
-              title={`Preview ${collection.title} selections.`}
-              description="These names and visuals come from Metro's current source catalog. The page is designed for inquiry and showroom comparison, not checkout."
-            />
-            <div className="mt-10">
-              <FeaturedItemGrid items={previewItems} />
-            </div>
-          </div>
-        </section>
       ) : null}
+
+      <CatalogSnapshot
+        eyebrow="Collection guide"
+        title={`${collection.title} selections, organized for showroom review.`}
+        description={`Metro lists ${collection.count} items in this collection on the current source catalog. The page highlights the most useful series, previews, and next steps above before an in-person comparison.`}
+        tags={(collection.collections ?? [])
+          .map((item) => item.title)
+          .concat(
+            collection.collections?.length
+              ? []
+              : liveProducts.length
+                ? liveProducts.slice(0, 10).map((item) => item.name)
+                : sourcePreviewItems.map((item) => item.title)
+          )}
+        stats={[
+          {
+            label: "Catalog items",
+            value: String(collection.count),
+            detail: "Current source-catalog count for this collection.",
+          },
+          {
+            label: collection.collections?.length ? "Subcollections" : "Previews",
+            value: String(
+              collection.collections?.length ??
+                (liveProducts.length || sourcePreviewItems.length)
+            ),
+            detail: collection.collections?.length
+              ? "Series or families to compare before choosing a finish."
+              : "Visible selections from Metro's source-backed catalog.",
+          },
+          {
+            label: "Category",
+            value: product.title,
+            detail: `Part of Metro's ${product.title.toLowerCase()} showroom catalog.`,
+          },
+        ]}
+      />
 
       <FeatureList
         title="How to shop this collection"

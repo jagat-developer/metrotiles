@@ -95,6 +95,9 @@ export default async function ProductCategoryPage({ params }: ProductPageProps) 
   }
 
   const liveProducts = getLiveProductsForRoute(product.slug);
+  const sourcePreviewItems = product.collections?.length
+    ? []
+    : (product.featuredItems ?? []);
   const liveProductItems = liveProducts.map((item) => ({
     name: item.name,
     description: `Source-backed ${product.title.toLowerCase()} selection listed in Metro's live catalog.`,
@@ -156,42 +159,6 @@ export default async function ProductCategoryPage({ params }: ProductPageProps) 
         </div>
       </section>
 
-      <CatalogSnapshot
-        eyebrow="Showroom catalog"
-        title={`A clearer way to shop ${product.title}.`}
-        description={`Metro lists ${product.count} items in this category on the current source catalog. Use the collection families and preview styles below to narrow the direction before visiting the Brampton showroom.`}
-        tags={(product.collections ?? [])
-          .map((item) => item.title)
-          .concat(
-            product.collections?.length
-              ? product.useCases
-              : liveProducts.slice(0, 8).map((item) => item.name)
-          )}
-        stats={[
-          {
-            label: "Catalog items",
-            value: String(product.count),
-            detail: "Current source-catalog count for this Metro category.",
-          },
-          {
-            label: product.collections?.length ? "Collections" : "Previews",
-            value: String(
-              product.collections?.length ??
-                (liveProducts.length || product.featuredItems?.length || 0)
-            ),
-            detail: product.collections?.length
-              ? "Organized families to compare by brand, series, or product type."
-              : "Visible showroom styles to help start the selection process.",
-          },
-          {
-            label: "Next step",
-            value: "Visit",
-            detail:
-              "Bring room details, photos, or plans to compare finishes in person.",
-          },
-        ]}
-      />
-
       {product.collections?.length ? (
         <section className="bg-[#faf9f6] py-16 sm:py-20">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -205,6 +172,19 @@ export default async function ProductCategoryPage({ params }: ProductPageProps) 
                 collections={product.collections}
                 basePath={`/products/${product.slug}`}
               />
+            </div>
+          </div>
+        </section>
+      ) : sourcePreviewItems.length ? (
+        <section className="bg-[#faf9f6] py-16 sm:py-20">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <SectionIntro
+              eyebrow="Source catalog"
+              title={`Review ${product.title} source selections.`}
+              description="These names and visuals come from Metro's current source catalog. Use them to start the shortlist before confirming availability with the showroom team."
+            />
+            <div className="mt-10">
+              <FeaturedItemGrid items={sourcePreviewItems} />
             </div>
           </div>
         </section>
@@ -234,20 +214,43 @@ export default async function ProductCategoryPage({ params }: ProductPageProps) 
             </div>
           </div>
         </section>
-      ) : product.featuredItems?.length ? (
-        <section className="bg-[#faf9f6] py-16 sm:py-20">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <SectionIntro
-              eyebrow="Showroom previews"
-              title={`Preview ${product.title} styles.`}
-              description="Product names come from Metro's current source catalog. Availability, finish, and ordering details should be confirmed with the showroom team."
-            />
-            <div className="mt-10">
-              <FeaturedItemGrid items={product.featuredItems} />
-            </div>
-          </div>
-        </section>
       ) : null}
+
+      <CatalogSnapshot
+        eyebrow="Showroom catalog"
+        title={`A clearer way to shop ${product.title}.`}
+        description={`Metro lists ${product.count} items in this category on the current source catalog. Use the collection families and preview styles above to narrow the direction before visiting the Brampton showroom.`}
+        tags={(product.collections ?? [])
+          .map((item) => item.title)
+          .concat(
+            product.collections?.length
+              ? product.useCases
+              : liveProducts.slice(0, 8).map((item) => item.name)
+          )}
+        stats={[
+          {
+            label: "Catalog items",
+            value: String(product.count),
+            detail: "Current source-catalog count for this Metro category.",
+          },
+          {
+            label: product.collections?.length ? "Collections" : "Previews",
+            value: String(
+              product.collections?.length ??
+                (liveProducts.length || sourcePreviewItems.length)
+            ),
+            detail: product.collections?.length
+              ? "Organized families to compare by brand, series, or product type."
+              : "Visible showroom styles to help start the selection process.",
+          },
+          {
+            label: "Next step",
+            value: "Visit",
+            detail:
+              "Bring room details, photos, or plans to compare finishes in person.",
+          },
+        ]}
+      />
 
       <FeatureList title={`Why choose ${product.title}`} items={product.features} />
       <FeatureList title="Common project uses" items={product.useCases} />
