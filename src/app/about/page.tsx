@@ -10,16 +10,17 @@ import { benefits, site } from "@/lib/data";
 import { breadcrumbJsonLd, pageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = pageMetadata({
-  title: "About Metro Tiles & Flooring",
+  title: "About Metro Tiles & Flooring Brampton",
   description:
-    "Learn about Metro Tiles & Flooring, a Brampton showroom offering quality flooring, tiles, expert advice, direct-import value, and material support for homeowners and contractors.",
+    "Learn about Metro Tiles & Flooring, a Brampton flooring company and tile showroom offering expert advice, direct-import value, and material support.",
   path: "/about",
-  image: "/images/bathroom-tile.jpg",
+  image: "/images/showroom/open-showroom-living.jpg",
   keywords: [
     "about Metro Tiles and Flooring",
-    "Brampton flooring showroom",
-    "Brampton tile store",
-    "flooring experts Brampton",
+    "flooring company brampton",
+    "flooring companies brampton",
+    "brampton flooring company",
+    "tiles store in brampton",
   ],
 });
 
@@ -38,7 +39,7 @@ export default function AboutPage() {
         eyebrow="About Metro"
         title="Where quality, style, and customer satisfaction come together."
         description="Metro is more than a tile and flooring store. The team helps homeowners, contractors, and designers find quality materials, expert advice, and a better showroom experience."
-        image="/images/bathroom-tile.jpg"
+        image="/images/showroom/open-showroom-living.jpg"
       />
 
       <section className="bg-white py-14">
@@ -116,8 +117,8 @@ export default function AboutPage() {
         <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:px-8">
           <div className="relative min-h-[480px] overflow-hidden rounded-[6px] bg-stone-100">
             <Image
-              src="/images/dome-tile.jpg"
-              alt="Metro showroom tile inspiration"
+              src="/images/showroom/ash-spa-bathroom.jpg"
+              alt="Metro bathroom and vanity showroom inspiration"
               fill
               sizes="(min-width: 1024px) 55vw, 100vw"
               className="object-cover"

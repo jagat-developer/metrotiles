@@ -1,11 +1,31 @@
 import Image from "next/image";
 import Link from "next/link";
-import { navigation, productCategories, services, site } from "@/lib/data";
+import {
+  localTopics,
+  navigation,
+  productCategories,
+  services,
+  site,
+} from "@/lib/data";
+
+const priorityLocalTopicSlugs = [
+  "flooring",
+  "hardwood-flooring",
+  "flooring-installation",
+  "tiles",
+  "bathroom-renovations",
+  "vinyl-flooring",
+  "laminate-flooring",
+];
+
+const priorityLocalTopics = priorityLocalTopicSlugs
+  .map((slug) => localTopics.find((topic) => topic.slug === slug))
+  .filter((topic): topic is (typeof localTopics)[number] => Boolean(topic));
 
 export function SiteFooter() {
   return (
     <footer className="bg-stone-950 py-12 text-white">
-      <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 md:grid-cols-[1.2fr_0.8fr_0.8fr_0.8fr] lg:px-8">
+      <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 md:grid-cols-2 lg:grid-cols-[1.2fr_0.7fr_0.75fr_0.75fr_0.9fr] lg:px-8">
         <div>
           <Link
             href="/"
@@ -82,6 +102,23 @@ export function SiteFooter() {
                 className="hover:text-white"
               >
                 {service.title}
+              </Link>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">
+            Brampton
+          </p>
+          <div className="mt-4 grid gap-3 text-sm text-stone-300">
+            {priorityLocalTopics.map((topic) => (
+              <Link
+                key={topic.slug}
+                href={`/brampton/${topic.slug}`}
+                className="hover:text-white"
+              >
+                {topic.title}
               </Link>
             ))}
           </div>

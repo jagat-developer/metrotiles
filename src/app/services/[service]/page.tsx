@@ -39,12 +39,17 @@ export async function generateMetadata({
     return {};
   }
 
+  const pageTitle =
+    service.pageTitle ?? `${service.title} Services in Brampton`;
+
   return pageMetadata({
-    title: `${service.title} Services in Brampton`,
-    description: `${service.description} Get expert showroom guidance from Metro Tiles & Flooring in Brampton.`,
+    title: pageTitle,
+    description:
+      service.seoDescription ??
+      `${service.description} Get expert showroom guidance from Metro Tiles & Flooring in Brampton.`,
     path: `/services/${service.slug}`,
     image: service.image,
-    keywords: [
+    keywords: service.seoKeywords ?? [
       `${service.title} services Brampton`,
       `${service.title} Metro Tiles`,
       "Brampton renovation materials",
@@ -94,7 +99,7 @@ export default async function ServiceDetailPage({ params }: ServicePageProps) {
       <SiteHeader />
       <PageHero
         eyebrow={service.eyebrow}
-        title={`${service.title} services in Brampton`}
+        title={service.pageTitle ?? `${service.title} services in Brampton`}
         description={service.intro}
         image={service.image}
       />

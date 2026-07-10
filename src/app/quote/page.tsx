@@ -29,15 +29,18 @@ const quoteBenefits = [
 ];
 
 export const metadata: Metadata = pageMetadata({
-  title: "Get a Free Quote",
+  title: "Get a Free Flooring and Tile Quote in Brampton",
   description:
-    "Request a free quote from Metro Tiles & Flooring for flooring, tiles, furnishings, and construction materials in Brampton and across the GTA.",
+    "Request a free quote from Metro Tiles & Flooring for hardwood flooring, vinyl flooring, laminate flooring, tiles, and bathroom materials in Brampton.",
   path: "/quote",
-  image: "/images/vinyl-flooring.jpg",
+  image: "/images/showroom/soft-bedroom-flooring.jpg",
   keywords: [
     "free flooring quote Brampton",
     "tile quote Brampton",
     "flooring in Brampton",
+    "hardwood flooring brampton",
+    "vinyl flooring brampton",
+    "laminate flooring brampton",
     "Metro Tiles quote",
   ],
 });
@@ -58,7 +61,7 @@ export default function QuotePage() {
         eyebrow="Flooring in Brampton"
         title="Tell Metro about your project."
         description="Find the right flooring, tile, furnishing, or construction material for your home, basement, condo, renovation, or commercial project."
-        image="/images/vinyl-flooring.jpg"
+        image="/images/showroom/soft-bedroom-flooring.jpg"
         ctaLabel="Start quote"
         ctaHref="#quote-form"
       />

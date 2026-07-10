@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import { notFound } from "next/navigation";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { CollectionGrid, FeaturedItemGrid } from "@/components/CardGrids";
 import {
+  CatalogSnapshot,
   ContactCTA,
   FAQSection,
   FeatureList,
@@ -10,6 +11,7 @@ import {
 } from "@/components/ContentSections";
 import { JsonLd } from "@/components/JsonLd";
 import { PageHero } from "@/components/PageHero";
+import { SectionIntro } from "@/components/SectionIntro";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
 import { getProduct, productCategories, services } from "@/lib/data";
@@ -44,12 +46,16 @@ export async function generateMetadata({
     return {};
   }
 
+  const pageTitle = product.pageTitle ?? `${product.title} in Brampton`;
+
   return pageMetadata({
-    title: `${product.title} in Brampton`,
-    description: `${product.description} Compare ${product.title.toLowerCase()} at Metro Tiles & Flooring's Brampton showroom with expert guidance and quote support.`,
+    title: pageTitle,
+    description:
+      product.seoDescription ??
+      `${product.description} Browse source-backed ${product.title.toLowerCase()} collections at Metro Tiles & Flooring's Brampton showroom.`,
     path: `/products/${product.slug}`,
     image: product.image,
-    keywords: [
+    keywords: product.seoKeywords ?? [
       `${product.title} Brampton`,
       `${product.title} showroom`,
       "Metro Tiles and Flooring products",
@@ -88,6 +94,22 @@ export default async function ProductCategoryPage({ params }: ProductPageProps) 
     { label: "Products", href: "/products" },
     { label: product.title, href: `/products/${product.slug}` },
   ];
+  const collectionItems =
+    product.collections?.map((collection) => ({
+      name: collection.title,
+      description: collection.description,
+      path: `/products/${product.slug}/${collection.slug}`,
+    })) ??
+    product.featuredItems?.map((item) => ({
+      name: item.title,
+      description: item.description,
+      path: `/products/${product.slug}`,
+    })) ??
+    product.useCases.map((item) => ({
+      name: item,
+      description: `${item} supported through Metro's ${product.title} category.`,
+      path: `/products/${product.slug}`,
+    }));
 
   return (
     <main className="min-h-screen bg-[#faf9f6] text-stone-950">
@@ -104,18 +126,14 @@ export default async function ProductCategoryPage({ params }: ProductPageProps) 
           name: `${product.title} at Metro Tiles & Flooring`,
           description: product.description,
           path: `/products/${product.slug}`,
-          items: product.useCases.map((item) => ({
-            name: item,
-            description: `${item} supported through Metro's ${product.title} category.`,
-            path: `/products/${product.slug}`,
-          })),
+          items: collectionItems,
         })}
       />
 
       <SiteHeader />
       <PageHero
         eyebrow={product.eyebrow}
-        title={`${product.title} in Brampton`}
+        title={product.pageTitle ?? `${product.title} in Brampton`}
         description={product.intro}
         image={product.image}
       />
@@ -126,32 +144,69 @@ export default async function ProductCategoryPage({ params }: ProductPageProps) 
         </div>
       </section>
 
-      <section className="bg-white pb-20 sm:pb-24">
-        <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[0.95fr_1.05fr] lg:items-center lg:px-8">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-teal-800">
-              Category details
-            </p>
-            <h2 className="mt-4 font-serif text-4xl leading-tight text-stone-950">
-              Compare {product.title.toLowerCase()} by look, performance, and room.
-            </h2>
-            <p className="mt-5 text-base leading-8 text-stone-600">
-              Metro lists {product.count} items in this category on the current
-              source catalog. Visit the showroom to confirm availability,
-              compare samples, and get advice before ordering.
-            </p>
-          </div>
-          <div className="relative min-h-[420px] overflow-hidden rounded-[6px] bg-stone-100">
-            <Image
-              src={product.image}
-              alt={product.title}
-              fill
-              sizes="(min-width: 1024px) 48vw, 100vw"
-              className="object-cover"
+      <CatalogSnapshot
+        eyebrow="Showroom catalog"
+        title={`A clearer way to shop ${product.title}.`}
+        description={`Metro lists ${product.count} items in this category on the current source catalog. Use the collection families and preview styles below to narrow the direction before visiting the Brampton showroom.`}
+        tags={(product.collections ?? product.featuredItems ?? [])
+          .map((item) => item.title)
+          .concat(product.useCases)}
+        stats={[
+          {
+            label: "Catalog items",
+            value: String(product.count),
+            detail: "Current source-catalog count for this Metro category.",
+          },
+          {
+            label: product.collections?.length ? "Collections" : "Previews",
+            value: String(
+              product.collections?.length ?? product.featuredItems?.length ?? 0
+            ),
+            detail: product.collections?.length
+              ? "Organized families to compare by brand, series, or product type."
+              : "Visible showroom styles to help start the selection process.",
+          },
+          {
+            label: "Next step",
+            value: "Visit",
+            detail:
+              "Bring room details, photos, or plans to compare finishes in person.",
+          },
+        ]}
+      />
+
+      {product.collections?.length ? (
+        <section className="bg-[#faf9f6] py-16 sm:py-20">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <SectionIntro
+              eyebrow="Source catalog"
+              title={`Explore ${product.title} collections.`}
+              description="These collections mirror Metro's current live catalog structure while keeping the browsing experience clean, premium, and showroom-focused."
             />
+            <div className="mt-10">
+              <CollectionGrid
+                collections={product.collections}
+                basePath={`/products/${product.slug}`}
+              />
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      ) : null}
+
+      {product.featuredItems?.length ? (
+        <section className="bg-[#faf9f6] py-16 sm:py-20">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <SectionIntro
+              eyebrow="Showroom previews"
+              title={`Preview ${product.title} styles.`}
+              description="Product names come from Metro's current source catalog. Availability, finish, and ordering details should be confirmed with the showroom team."
+            />
+            <div className="mt-10">
+              <FeaturedItemGrid items={product.featuredItems} />
+            </div>
+          </div>
+        </section>
+      ) : null}
 
       <FeatureList title={`Why choose ${product.title}`} items={product.features} />
       <FeatureList title="Common project uses" items={product.useCases} />

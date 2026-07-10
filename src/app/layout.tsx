@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import Script from "next/script";
 import { JsonLd } from "@/components/JsonLd";
 import { site } from "@/lib/data";
 import { localBusinessJsonLd } from "@/lib/seo";
@@ -18,9 +19,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   applicationName: site.name,
-  title: "Metro Tiles & Flooring | Brampton Tile and Flooring Showroom",
+  title: "Flooring Brampton & Tile Showroom | Metro Tiles & Flooring",
   description:
-    "Metro Tiles & Flooring offers premium tiles, flooring, furnishings, construction materials, expert guidance, and free quotes in Brampton and across the GTA.",
+    "Metro Tiles & Flooring is a Brampton flooring company and tile showroom for hardwood, vinyl, laminate, tile, bathroom renovation materials, and free quotes.",
   robots: {
     index: true,
     follow: true,
@@ -34,12 +35,14 @@ export const metadata: Metadata = {
   },
   keywords: [
     "Metro Tiles and Flooring",
-    "Brampton tile showroom",
-    "flooring Brampton",
-    "tiles Brampton",
-    "vinyl flooring",
-    "laminate flooring",
-    "engineered hardwood",
+    "flooring brampton",
+    "tiles brampton",
+    "tiles store in brampton",
+    "hardwood flooring brampton",
+    "wood flooring brampton",
+    "vinyl flooring brampton",
+    "laminate flooring brampton",
+    "flooring company brampton",
     "bathroom renovation materials",
   ],
 };
@@ -57,6 +60,15 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col">
         <JsonLd data={localBusinessJsonLd()} />
         {children}
+        <Script
+          async
+          id="roomvoAssistant"
+          type="text/javascript"
+          data-locale="en-us"
+          data-position="bottom-right"
+          src="https://www.roomvo.com/static/scripts/b2b/common/assistant.js"
+          strategy="afterInteractive"
+        />
       </body>
     </html>
   );

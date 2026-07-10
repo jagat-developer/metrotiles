@@ -44,7 +44,7 @@ export async function generateMetadata({
     description: topic.description,
     path: `/brampton/${topic.slug}`,
     image: topic.image,
-    keywords: [
+    keywords: topic.seoKeywords ?? [
       topic.title,
       `${topic.title} showroom`,
       "Metro Tiles and Flooring Brampton",

@@ -16,16 +16,19 @@ import {
 } from "@/lib/seo";
 
 export const metadata: Metadata = pageMetadata({
-  title: "Products",
+  title: "Tiles Store in Brampton and Flooring Products",
   description:
-    "Explore Metro Tiles & Flooring product categories, including tiles, vinyl, laminate, engineered hardwood, solid hardwood, vanities, wall tiles, and bathroom accessories.",
+    "Explore Metro product categories for tiles in Brampton, hardwood flooring, vinyl flooring, laminate flooring, vanities, wall tiles, and bathroom accessories.",
   path: "/products",
-  image: "/images/dome-tile.jpg",
+  image: "/images/showroom/warm-kitchen-flooring.jpg",
   keywords: [
-    "Brampton flooring products",
-    "tile showroom Brampton",
-    "vinyl flooring Brampton",
-    "hardwood flooring Brampton",
+    "tiles store in brampton",
+    "tiles brampton",
+    "tile supplier brampton",
+    "flooring brampton",
+    "vinyl flooring brampton",
+    "laminate flooring brampton",
+    "hardwood flooring brampton",
   ],
 });
 
@@ -56,9 +59,9 @@ export default function ProductsPage() {
       <SiteHeader />
       <PageHero
         eyebrow="Product showroom"
-        title="Premium categories for floors, walls, baths, and finishes."
+        title="Tiles, flooring, hardwood, vinyl, and laminate in Brampton."
         description="Browse the product categories customers can compare at Metro's Brampton showroom, from porcelain tile and wall tile to vinyl, laminate, hardwood, vanities, and bathroom accessories."
-        image="/images/dome-tile.jpg"
+        image="/images/showroom/warm-kitchen-flooring.jpg"
       />
 
       <section className="bg-white py-14">
@@ -76,8 +79,8 @@ export default function ProductsPage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <SectionIntro
             eyebrow="Category showroom"
-            title="Choose by room, material, durability, and finish."
-            description="Metro's source catalog includes Bathroom Accessories, Engineered Hardwood, Laminate, Solid Hardwood, Tiles, Vanity, Vinyl, and Wall Tiles."
+            title="Choose by category, collection, room, and finish."
+            description="Metro's source catalog includes top product categories plus brand and series collections for tiles, vinyl, laminate, engineered hardwood, solid hardwood, vanity, wall tile, and bathroom accessories."
           />
           <div className="mt-10">
             <ProductGrid products={productCategories} />

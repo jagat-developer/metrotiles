@@ -1,6 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
-import type { ProductCategory, Service } from "@/lib/data";
+import type {
+  CatalogPreviewItem,
+  ProductCategory,
+  ProductCollection,
+  Service,
+} from "@/lib/data";
 
 export function ProductGrid({ products }: { products: ProductCategory[] }) {
   return (
@@ -9,7 +14,7 @@ export function ProductGrid({ products }: { products: ProductCategory[] }) {
         <Link
           key={product.slug}
           href={`/products/${product.slug}`}
-          className="group bg-white"
+          className="group flex min-h-full flex-col bg-white"
         >
           <div className="relative aspect-[4/3] overflow-hidden bg-stone-100">
             <Image
@@ -20,18 +25,147 @@ export function ProductGrid({ products }: { products: ProductCategory[] }) {
               className="object-cover transition duration-500 group-hover:scale-[1.04]"
             />
           </div>
-          <div className="p-5">
+          <div className="flex flex-1 flex-col p-5">
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-teal-800">
-              {product.eyebrow} / {product.count}
+              {product.eyebrow} / {product.count} items
             </p>
             <h3 className="mt-2 text-xl font-semibold text-stone-950">
               {product.title}
             </h3>
-            <p className="mt-3 min-h-20 text-sm leading-6 text-stone-600">
+            <p className="mt-3 text-sm leading-6 text-stone-600">
               {product.description}
             </p>
+            <div className="mt-auto pt-5">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-stone-400">
+                {product.collections?.length
+                  ? `${product.collections.length} collections`
+                  : `${product.featuredItems?.length ?? 0} previews`}
+              </p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {(product.collections ?? product.featuredItems ?? [])
+                  .slice(0, 3)
+                  .map((item) => (
+                    <span
+                      key={item.title}
+                      className="rounded-full border border-stone-200 px-3 py-1 text-xs font-medium text-stone-600"
+                    >
+                      {item.title}
+                    </span>
+                  ))}
+              </div>
+            </div>
           </div>
         </Link>
+      ))}
+    </div>
+  );
+}
+
+export function CollectionGrid({
+  collections,
+  basePath,
+}: {
+  collections: ProductCollection[];
+  basePath: string;
+}) {
+  return (
+    <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      {collections.map((collection) => (
+        <Link
+          key={collection.slug}
+          href={`${basePath}/${collection.slug}`}
+          className="group overflow-hidden rounded-[6px] border border-stone-200 bg-white shadow-[0_18px_55px_rgba(50,44,35,0.06)] transition hover:-translate-y-1 hover:border-teal-800 hover:shadow-[0_24px_70px_rgba(50,44,35,0.1)]"
+        >
+          <div className="relative aspect-[4/3] overflow-hidden bg-stone-100">
+            <Image
+              src={collection.image}
+              alt={collection.title}
+              fill
+              sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+              className="object-cover transition duration-500 group-hover:scale-[1.04]"
+            />
+            <div className="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-stone-800 shadow-lg backdrop-blur">
+              {collection.count} items
+            </div>
+          </div>
+          <div className="p-5">
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-teal-800">
+              {collection.eyebrow}
+            </p>
+            <h3 className="mt-2 text-2xl font-semibold text-stone-950">
+              {collection.title}
+            </h3>
+            <p className="mt-3 text-sm leading-7 text-stone-600">
+              {collection.description}
+            </p>
+            <p className="mt-5 text-xs font-semibold uppercase tracking-[0.18em] text-stone-400">
+              {collection.collections?.length
+                ? `${collection.collections.length} subcollections`
+                : `${collection.featuredItems?.length ?? 0} previews`}
+            </p>
+            <div className="mt-4 inline-flex items-center text-sm font-semibold text-teal-900">
+              Explore collection
+              <span className="ml-2 transition group-hover:translate-x-1">
+                -&gt;
+              </span>
+            </div>
+          </div>
+        </Link>
+      ))}
+    </div>
+  );
+}
+
+export function FeaturedItemGrid({
+  items,
+}: {
+  items: CatalogPreviewItem[];
+}) {
+  return (
+    <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      {items.map((item) => (
+        <article
+          key={item.sourceUrl}
+          className="group overflow-hidden rounded-[6px] border border-stone-200 bg-white shadow-[0_18px_55px_rgba(50,44,35,0.06)] transition hover:-translate-y-1 hover:border-teal-800 hover:shadow-[0_24px_70px_rgba(50,44,35,0.1)]"
+        >
+          <div className="relative aspect-[4/3] overflow-hidden bg-stone-100">
+            <Image
+              src={item.image}
+              alt={item.title}
+              fill
+              sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+              className="object-cover transition duration-500 group-hover:scale-[1.04]"
+            />
+            <div className="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-stone-800 shadow-lg backdrop-blur">
+              Preview
+            </div>
+          </div>
+          <div className="p-5">
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-teal-800">
+              Showroom selection
+            </p>
+            <h3 className="mt-2 text-xl font-semibold text-stone-950">
+              {item.title}
+            </h3>
+            <p className="mt-3 text-sm leading-7 text-stone-600">
+              {item.description}
+            </p>
+            <div className="mt-5 flex flex-col gap-2 sm:flex-row">
+              <Link
+                href="/quote"
+                className="flex h-10 items-center justify-center rounded-[4px] bg-stone-950 px-4 text-xs font-semibold uppercase tracking-[0.14em] text-white transition hover:bg-teal-900"
+              >
+                Ask about it
+              </Link>
+              <Link
+                href="/quote"
+                className="flex h-10 items-center justify-center rounded-[4px] border border-stone-300 px-4 text-xs font-semibold uppercase tracking-[0.14em] text-stone-800 transition hover:border-teal-900 hover:text-teal-900"
+              >
+                Get quote
+              </Link>
+            </div>
+          </div>
+        </article>
       ))}
     </div>
   );

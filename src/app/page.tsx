@@ -22,21 +22,45 @@ import { HeroCarousel } from "./HeroCarousel";
 import { QuoteForm } from "./QuoteForm";
 
 export const metadata: Metadata = pageMetadata({
-  title: "Metro Tiles & Flooring | Brampton Tile and Flooring Showroom",
+  title: "Flooring Brampton & Tile Showroom | Metro Tiles & Flooring",
   description:
-    "Metro Tiles & Flooring offers premium tiles, flooring, furnishings, construction materials, expert guidance, and free quotes in Brampton and across the GTA.",
+    "Metro Tiles & Flooring is a Brampton flooring company and tile showroom for hardwood, vinyl, laminate, tile, bathroom renovation materials, and free quotes.",
   path: "/",
-  image: "/images/bath-tub.jpg",
+  image: "/images/showroom/ash-spa-bathroom.jpg",
   keywords: [
     "Metro Tiles and Flooring",
-    "Brampton tile showroom",
-    "flooring Brampton",
-    "tiles Brampton",
-    "vinyl flooring",
-    "laminate flooring",
-    "engineered hardwood",
+    "flooring brampton",
+    "flooring company brampton",
+    "flooring companies brampton",
+    "tiles store in brampton",
+    "tiles brampton",
+    "hardwood flooring brampton",
+    "wood flooring brampton",
   ],
 });
+
+const showroomMoments = [
+  {
+    title: "Bright bath suites",
+    description: "Marble-look tile, tubs, and fixtures viewed as a complete room.",
+    image: "/images/showroom/white-bathroom-tiles.jpg",
+  },
+  {
+    title: "Warm flooring palettes",
+    description: "Wood-look surfaces paired with kitchen and furnishing finishes.",
+    image: "/images/showroom/warm-kitchen-flooring.jpg",
+  },
+  {
+    title: "Feature wall direction",
+    description: "Decorative wall tile ideas for bathrooms and accent spaces.",
+    image: "/images/showroom/floral-wall-tile-bathroom.jpg",
+  },
+  {
+    title: "Open-plan materials",
+    description: "Flooring, stone surfaces, and finishes considered together.",
+    image: "/images/showroom/open-showroom-living.jpg",
+  },
+];
 
 export default function Home() {
   return (
@@ -56,10 +80,62 @@ export default function Home() {
         })}
       />
 
-      <SiteHeader variant="overlay" />
+      <SiteHeader />
       <HeroCarousel />
 
       <HomeProductShowcase products={productCategories} />
+
+      <section className="bg-[#faf9f6] py-20 sm:py-24">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="grid gap-8 lg:grid-cols-[0.82fr_1.18fr] lg:items-end">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-teal-800">
+                Showroom inspiration
+              </p>
+              <h2 className="mt-4 max-w-2xl font-serif text-4xl leading-tight text-stone-950 sm:text-5xl">
+                See finishes in rooms, not just as samples.
+              </h2>
+            </div>
+            <p className="max-w-2xl text-base leading-8 text-stone-600 lg:justify-self-end">
+              The strongest material decisions happen when tile, flooring,
+              fixtures, and furnishings are viewed together with light, scale,
+              and surrounding finishes.
+            </p>
+          </div>
+
+          <div className="mt-10 grid gap-4 lg:grid-cols-4">
+            {showroomMoments.map((moment, index) => (
+              <article
+                key={moment.title}
+                className={`group relative isolate min-h-[320px] overflow-hidden rounded-[6px] bg-stone-900 shadow-[0_24px_80px_rgba(50,44,35,0.12)] ${
+                  index === 0 ? "lg:col-span-2 lg:min-h-[520px]" : ""
+                } ${index === 3 ? "lg:col-span-2" : ""}`}
+              >
+                <Image
+                  src={moment.image}
+                  alt={moment.title}
+                  fill
+                  sizes={
+                    index === 0 || index === 3
+                      ? "(min-width: 1024px) 50vw, 100vw"
+                      : "(min-width: 1024px) 25vw, 100vw"
+                  }
+                  className="object-cover transition duration-700 group-hover:scale-[1.04]"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-stone-950/78 via-stone-950/16 to-transparent" />
+                <div className="relative z-10 flex min-h-[inherit] flex-col justify-end p-5 sm:p-6">
+                  <h3 className="text-2xl font-semibold text-white">
+                    {moment.title}
+                  </h3>
+                  <p className="mt-3 max-w-md text-sm leading-7 text-stone-100">
+                    {moment.description}
+                  </p>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
 
       <section id="services" className="border-y border-stone-200 bg-[#f5f3ee] py-20 sm:py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -79,8 +155,8 @@ export default function Home() {
           <div className="grid gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
             <div className="relative min-h-[520px] overflow-hidden rounded-[6px] bg-stone-100">
               <Image
-                src="/images/bora-bora-tile.jpg"
-                alt="Premium textured tile display"
+                src="/images/showroom/sage-pool-lounge-tile.jpg"
+                alt="Premium tile and flooring lounge display"
                 fill
                 sizes="(min-width: 1024px) 50vw, 100vw"
                 className="object-cover"
@@ -141,8 +217,8 @@ export default function Home() {
           <div className="mt-10 grid gap-5 lg:grid-cols-[1.2fr_0.8fr]">
             <div className="relative min-h-[440px] overflow-hidden rounded-[6px] bg-stone-800">
               <Image
-                src="/images/calacatta-monet.jpg"
-                alt="Calacatta Monet marble-look porcelain tile"
+                src="/images/showroom/sunset-kitchen-island.jpg"
+                alt="Premium kitchen island with warm stone-look finish"
                 fill
                 sizes="(min-width: 1024px) 58vw, 100vw"
                 className="object-cover"

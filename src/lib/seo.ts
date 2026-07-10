@@ -34,7 +34,7 @@ export function pageMetadata({
   title,
   description,
   path,
-  image = "/images/dome-tile.jpg",
+  image = "/images/showroom/white-bathroom-tiles.jpg",
   keywords = [],
 }: MetadataInput): Metadata {
   const fullTitle = title.includes(site.name)
@@ -84,9 +84,9 @@ export function localBusinessJsonLd() {
     legalName: site.legalName,
     url: site.url,
     image: [
-      absoluteUrl("/images/bath-tub.jpg"),
-      absoluteUrl("/images/dome-tile.jpg"),
-      absoluteUrl("/images/solid-hardwood.jpg"),
+      absoluteUrl("/images/showroom/white-bathroom-tiles.jpg"),
+      absoluteUrl("/images/showroom/warm-kitchen-flooring.jpg"),
+      absoluteUrl("/images/showroom/open-showroom-living.jpg"),
     ],
     telephone: site.phoneDisplay,
     email: site.email,
@@ -106,6 +106,12 @@ export function localBusinessJsonLd() {
     makesOffer: [
       "Tiles",
       "Flooring",
+      "Hardwood flooring",
+      "Vinyl flooring",
+      "Laminate flooring",
+      "Engineered hardwood flooring",
+      "Flooring installation",
+      "Bathroom renovation materials",
       "Furnishings",
       "Construction materials",
       "Free quotes",
