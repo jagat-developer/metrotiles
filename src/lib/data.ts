@@ -501,7 +501,7 @@ export const productCategories: ProductCategory[] = [
   {
     slug: "laminate",
     title: "Laminate",
-    pageTitle: "Laminate Flooring in Brampton",
+    pageTitle: "Laminate Flooring Products in Brampton",
     count: 72,
     eyebrow: "Durable flooring",
     image: "/images/showroom/warm-kitchen-flooring.jpg",
@@ -676,7 +676,7 @@ export const productCategories: ProductCategory[] = [
   {
     slug: "tiles",
     title: "Tiles",
-    pageTitle: "Tiles in Brampton",
+    pageTitle: "Tile Products and Collections in Brampton",
     count: 55,
     eyebrow: "Porcelain and ceramic",
     image: "/images/showroom/white-bathroom-tiles.jpg",
@@ -918,7 +918,7 @@ export const productCategories: ProductCategory[] = [
   {
     slug: "vinyl",
     title: "Vinyl",
-    pageTitle: "Vinyl Flooring in Brampton",
+    pageTitle: "Vinyl Flooring Products in Brampton",
     count: 102,
     eyebrow: "Waterproof flooring",
     image: "/images/showroom/open-showroom-living.jpg",

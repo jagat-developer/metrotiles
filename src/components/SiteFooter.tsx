@@ -8,20 +8,6 @@ import {
   site,
 } from "@/lib/data";
 
-const priorityLocalTopicSlugs = [
-  "flooring",
-  "hardwood-flooring",
-  "flooring-installation",
-  "tiles",
-  "bathroom-renovations",
-  "vinyl-flooring",
-  "laminate-flooring",
-];
-
-const priorityLocalTopics = priorityLocalTopicSlugs
-  .map((slug) => localTopics.find((topic) => topic.slug === slug))
-  .filter((topic): topic is (typeof localTopics)[number] => Boolean(topic));
-
 export function SiteFooter() {
   return (
     <footer className="bg-stone-950 py-12 text-white">
@@ -78,7 +64,7 @@ export function SiteFooter() {
             Products
           </p>
           <div className="mt-4 grid gap-3 text-sm text-stone-300">
-            {productCategories.slice(0, 5).map((product) => (
+            {productCategories.map((product) => (
               <Link
                 key={product.slug}
                 href={`/products/${product.slug}`}
@@ -112,7 +98,7 @@ export function SiteFooter() {
             Brampton
           </p>
           <div className="mt-4 grid gap-3 text-sm text-stone-300">
-            {priorityLocalTopics.map((topic) => (
+            {localTopics.map((topic) => (
               <Link
                 key={topic.slug}
                 href={`/brampton/${topic.slug}`}
