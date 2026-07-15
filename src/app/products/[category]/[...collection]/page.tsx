@@ -14,7 +14,6 @@ import {
   RelatedLinks,
 } from "@/components/ContentSections";
 import { JsonLd } from "@/components/JsonLd";
-import { PageHero } from "@/components/PageHero";
 import { SectionIntro } from "@/components/SectionIntro";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
@@ -192,27 +191,19 @@ export default async function ProductCollectionPage({
       />
 
       <SiteHeader />
-      <PageHero
-        eyebrow={collection.eyebrow}
-        title={`${collection.title} in Brampton`}
-        description={collection.description}
-        image={collection.image}
-      />
-
-      <section className="bg-white py-14">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <Breadcrumbs items={breadcrumbs} />
-        </div>
-      </section>
 
       {collection.collections?.length ? (
-        <section className="bg-[#faf9f6] py-16 sm:py-20">
+        <section className="bg-[#faf9f6] py-12 sm:py-16">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <SectionIntro
-              eyebrow="Source catalog"
-              title={`Browse ${collection.title} series.`}
-              description="Nested collections follow Metro's live catalog structure and keep browsing focused on real showroom categories."
-            />
+            <Breadcrumbs items={breadcrumbs} />
+            <div className="mt-10">
+              <SectionIntro
+                eyebrow="Source catalog"
+                title={`Browse ${collection.title} series.`}
+                description="Nested collections follow Metro's live catalog structure and keep browsing focused on real showroom categories."
+                headingLevel="h1"
+              />
+            </div>
             <div className="mt-10">
               <CollectionGrid
                 collections={collection.collections}
@@ -222,13 +213,17 @@ export default async function ProductCollectionPage({
           </div>
         </section>
       ) : sourcePreviewItems.length ? (
-        <section className="bg-[#faf9f6] py-16 sm:py-20">
+        <section className="bg-[#faf9f6] py-12 sm:py-16">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <SectionIntro
-              eyebrow="Source catalog"
-              title={`Review ${collection.title} source selections.`}
-              description="These source-backed cards come from Metro's catalog structure before the live product list, so the page starts with the showroom context first."
-            />
+            <Breadcrumbs items={breadcrumbs} />
+            <div className="mt-10">
+              <SectionIntro
+                eyebrow="Source catalog"
+                title={`Review ${collection.title} source selections.`}
+                description="These source-backed cards come from Metro's catalog structure before the live product list, so the page starts with the showroom context first."
+                headingLevel="h1"
+              />
+            </div>
             <div className="mt-10">
               <FeaturedItemGrid items={sourcePreviewItems} />
             </div>

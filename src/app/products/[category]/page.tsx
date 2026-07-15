@@ -14,7 +14,6 @@ import {
   RelatedLinks,
 } from "@/components/ContentSections";
 import { JsonLd } from "@/components/JsonLd";
-import { PageHero } from "@/components/PageHero";
 import { SectionIntro } from "@/components/SectionIntro";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
@@ -146,27 +145,19 @@ export default async function ProductCategoryPage({ params }: ProductPageProps) 
       />
 
       <SiteHeader />
-      <PageHero
-        eyebrow={product.eyebrow}
-        title={product.pageTitle ?? `${product.title} in Brampton`}
-        description={product.intro}
-        image={product.image}
-      />
-
-      <section className="bg-white py-14">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <Breadcrumbs items={breadcrumbs} />
-        </div>
-      </section>
 
       {product.collections?.length ? (
-        <section className="bg-[#faf9f6] py-16 sm:py-20">
+        <section className="bg-[#faf9f6] py-12 sm:py-16">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <SectionIntro
-              eyebrow="Source catalog"
-              title={`Explore ${product.title} collections.`}
-              description="These collections mirror Metro's current live catalog structure while keeping the browsing experience clean, premium, and showroom-focused."
-            />
+            <Breadcrumbs items={breadcrumbs} />
+            <div className="mt-10">
+              <SectionIntro
+                eyebrow="Source catalog"
+                title={`Explore ${product.title} collections.`}
+                description="These collections mirror Metro's current live catalog structure while keeping the browsing experience clean, premium, and showroom-focused."
+                headingLevel="h1"
+              />
+            </div>
             <div className="mt-10">
               <CollectionGrid
                 collections={product.collections}
@@ -176,13 +167,17 @@ export default async function ProductCategoryPage({ params }: ProductPageProps) 
           </div>
         </section>
       ) : sourcePreviewItems.length ? (
-        <section className="bg-[#faf9f6] py-16 sm:py-20">
+        <section className="bg-[#faf9f6] py-12 sm:py-16">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <SectionIntro
-              eyebrow="Source catalog"
-              title={`Review ${product.title} source selections.`}
-              description="These names and visuals come from Metro's current source catalog. Use them to start the shortlist before confirming availability with the showroom team."
-            />
+            <Breadcrumbs items={breadcrumbs} />
+            <div className="mt-10">
+              <SectionIntro
+                eyebrow="Source catalog"
+                title={`Review ${product.title} source selections.`}
+                description="These names and visuals come from Metro's current source catalog. Use them to start the shortlist before confirming availability with the showroom team."
+                headingLevel="h1"
+              />
+            </div>
             <div className="mt-10">
               <FeaturedItemGrid items={sourcePreviewItems} />
             </div>
