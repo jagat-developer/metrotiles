@@ -11648,6 +11648,67 @@ export function getLiveChildCategoriesForRoute(
   );
 }
 
+// Metro's category endpoint returns these Majesto products for category 18,
+// but the product payload omits category metadata. Keep the route mapping here.
+const inferredProductCategoryPaths: Record<number, string[]> = {
+  1051: ["tiles/anatolia/majesto-series"],
+  1055: ["tiles/anatolia/majesto-series"],
+  1058: ["tiles/anatolia/majesto-series"],
+  1061: ["tiles/anatolia/majesto-series"],
+  1064: ["tiles/anatolia/majesto-series"],
+  1068: ["tiles/anatolia/majesto-series"],
+  1072: ["tiles/anatolia/majesto-series"],
+  1075: ["tiles/anatolia/majesto-series"],
+  1102: ["tiles/anatolia/majesto-series"],
+  1106: ["tiles/anatolia/majesto-series"],
+  1110: ["tiles/anatolia/majesto-series"],
+  1112: ["tiles/anatolia/majesto-series"],
+  1115: ["tiles/anatolia/majesto-series"],
+  1119: ["tiles/anatolia/majesto-series"],
+  1123: ["tiles/anatolia/majesto-series"],
+  1127: ["tiles/anatolia/majesto-series"],
+  1130: ["tiles/anatolia/majesto-series"],
+  1134: ["tiles/anatolia/majesto-series"],
+  1138: ["tiles/anatolia/majesto-series"],
+  1142: ["tiles/anatolia/majesto-series"],
+  1145: ["tiles/anatolia/majesto-series"],
+};
+
+function productCategoryPaths(product: LiveCatalogProduct) {
+  return product.categoryPaths.length
+    ? product.categoryPaths
+    : (inferredProductCategoryPaths[product.id] ?? product.categoryPaths);
+}
+
+function productWithInferredCategories(product: LiveCatalogProduct) {
+  const categoryPaths = productCategoryPaths(product);
+
+  if (categoryPaths === product.categoryPaths) {
+    return product;
+  }
+
+  const categories = categoryPaths
+    .map((path) =>
+      liveCatalogCategories.find(
+        (category) => category.path.join("/") === path
+      )
+    )
+    .filter((category): category is LiveCatalogCategory => Boolean(category))
+    .map((category) => ({
+      id: category.id,
+      name: category.name,
+      slug: category.slug,
+      path: category.path,
+    }));
+
+  return {
+    ...product,
+    categories,
+    categoryIds: categories.map((category) => category.id),
+    categoryPaths,
+  };
+}
+
 export function getLiveProductsForRoute(
   categorySlug: string,
   collectionSlugs: string[] = []
@@ -11659,11 +11720,14 @@ export function getLiveProductsForRoute(
   }
 
   const path = category.path.join("/");
-  return liveCatalogProducts.filter((product) =>
-    product.categoryPaths.some(
-      (categoryPath) => categoryPath === path || categoryPath.startsWith(`${path}/`)
+  return liveCatalogProducts
+    .map(productWithInferredCategories)
+    .filter((product) =>
+      product.categoryPaths.some(
+        (categoryPath) =>
+          categoryPath === path || categoryPath.startsWith(`${path}/`)
+      )
     )
-  );
 }
 
 export const liveCatalogTotals = {

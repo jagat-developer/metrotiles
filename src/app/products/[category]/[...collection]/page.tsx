@@ -103,19 +103,24 @@ export default async function ProductCollectionPage({
     collectionSlugs.length > 1
       ? productCollectionPath(product.slug, collectionSlugs.slice(0, -1))
       : `/products/${product.slug}`;
+  const childCollections = collection.collections ?? [];
+  const hasChildCollections = childCollections.length > 0;
+  const showLiveProductsAsSource = !hasChildCollections && liveProducts.length > 0;
   const sourcePreviewItems =
-    collection.featuredItems ??
-    (collection.collections?.length
+    showLiveProductsAsSource
       ? []
-      : [
-          {
-            title: collection.title,
-            image: collection.image,
-            sourceUrl: collection.sourceUrl,
-            description:
-              "Source-backed collection available to review with Metro's showroom team.",
-          },
-        ]);
+      : collection.featuredItems ??
+        (hasChildCollections
+          ? []
+          : [
+              {
+                title: collection.title,
+                image: collection.image,
+                sourceUrl: collection.sourceUrl,
+                description:
+                  "Source-backed collection available to review with Metro's showroom team.",
+              },
+            ]);
   const previewItems =
     liveProducts.length > 0 ? [] : sourcePreviewItems;
   const breadcrumbs = [
@@ -192,7 +197,7 @@ export default async function ProductCollectionPage({
 
       <SiteHeader />
 
-      {collection.collections?.length ? (
+      {hasChildCollections ? (
         <section className="bg-[#faf9f6] py-12 sm:py-16">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <Breadcrumbs items={breadcrumbs} />
@@ -206,9 +211,26 @@ export default async function ProductCollectionPage({
             </div>
             <div className="mt-10">
               <CollectionGrid
-                collections={collection.collections}
+                collections={childCollections}
                 basePath={currentPath}
               />
+            </div>
+          </div>
+        </section>
+      ) : showLiveProductsAsSource ? (
+        <section className="bg-[#faf9f6] py-12 sm:py-16">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <Breadcrumbs items={breadcrumbs} />
+            <div className="mt-10">
+              <SectionIntro
+                eyebrow="Source catalog"
+                title={`Browse ${collection.title} products.`}
+                description="These products are pulled from Metro's live source catalog so the collection page shows real showroom selections with product imagery and quote-ready details."
+                headingLevel="h1"
+              />
+            </div>
+            <div className="mt-10">
+              <LiveProductGrid items={liveProducts} />
             </div>
           </div>
         </section>
@@ -231,7 +253,7 @@ export default async function ProductCollectionPage({
         </section>
       ) : null}
 
-      {liveProducts.length ? (
+      {hasChildCollections && liveProducts.length ? (
         <section className="bg-white py-16 sm:py-20">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <SectionIntro
@@ -250,7 +272,7 @@ export default async function ProductCollectionPage({
             <div className="mt-10">
               <LiveProductGrid
                 items={liveProducts}
-                limit={collection.collections?.length ? 12 : undefined}
+                limit={12}
               />
             </div>
           </div>
@@ -277,14 +299,15 @@ export default async function ProductCollectionPage({
             detail: "Current source-catalog count for this collection.",
           },
           {
-            label: collection.collections?.length ? "Subcollections" : "Previews",
+            label: hasChildCollections ? "Subcollections" : "Products",
             value: String(
-              collection.collections?.length ??
-                (liveProducts.length || sourcePreviewItems.length)
+              hasChildCollections
+                ? childCollections.length
+                : liveProducts.length || sourcePreviewItems.length
             ),
-            detail: collection.collections?.length
+            detail: hasChildCollections
               ? "Series or families to compare before choosing a finish."
-              : "Visible selections from Metro's source-backed catalog.",
+              : "Visible product selections from Metro's source-backed catalog.",
           },
           {
             label: "Category",

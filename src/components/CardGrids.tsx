@@ -69,6 +69,20 @@ export function CollectionGrid({
   collections: ProductCollection[];
   basePath: string;
 }) {
+  function collectionDetail(collection: ProductCollection) {
+    if (collection.collections?.length) {
+      return `${collection.collections.length} subcollections`;
+    }
+
+    if (collection.featuredItems?.length) {
+      return `${collection.featuredItems.length} previews`;
+    }
+
+    return `${collection.count} source ${
+      collection.count === 1 ? "item" : "items"
+    }`;
+  }
+
   return (
     <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
       {collections.map((collection) => (
@@ -100,9 +114,7 @@ export function CollectionGrid({
               {collection.description}
             </p>
             <p className="mt-5 text-xs font-semibold uppercase tracking-[0.18em] text-stone-400">
-              {collection.collections?.length
-                ? `${collection.collections.length} subcollections`
-                : `${collection.featuredItems?.length ?? 0} previews`}
+              {collectionDetail(collection)}
             </p>
             <div className="mt-4 inline-flex items-center text-sm font-semibold text-teal-900">
               Explore collection
