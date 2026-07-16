@@ -1,3 +1,5 @@
+import { getAllLiveProductRoutePaths } from "./liveCatalog";
+
 export type FAQ = {
   question: string;
   answer: string;
@@ -1867,6 +1869,9 @@ export const allRoutePaths = [
   ...staticRoutes,
   ...productCategories.map((product) => `/products/${product.slug}`),
   ...getAllProductCollectionPaths().map(({ category, collection }) =>
+    productCollectionPath(category, collection)
+  ),
+  ...getAllLiveProductRoutePaths().map(({ category, collection }) =>
     productCollectionPath(category, collection)
   ),
   ...services.map((service) => `/services/${service.slug}`),

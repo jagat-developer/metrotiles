@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import Image from "next/image";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import {
@@ -18,13 +20,20 @@ import { SectionIntro } from "@/components/SectionIntro";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
 import {
+  getProduct,
   getAllProductCollectionPaths,
   getProductCollectionTrail,
   productCollectionPath,
+  site,
   services,
 } from "@/lib/data";
-import { getLiveProductsForRoute } from "@/lib/liveCatalog";
 import {
+  getAllLiveProductRoutePaths,
+  getLiveProductForRoute,
+  getLiveProductsForRoute,
+} from "@/lib/liveCatalog";
+import {
+  absoluteUrl,
   breadcrumbJsonLd,
   collectionJsonLd,
   faqJsonLd,
@@ -41,7 +50,10 @@ type ProductCollectionPageProps = {
 export const dynamicParams = false;
 
 export function generateStaticParams() {
-  return getAllProductCollectionPaths();
+  return [
+    ...getAllProductCollectionPaths(),
+    ...getAllLiveProductRoutePaths(),
+  ];
 }
 
 export async function generateMetadata({
@@ -50,19 +62,39 @@ export async function generateMetadata({
   const { category, collection: collectionSlugs } = await params;
   const data = getProductCollectionTrail(category, collectionSlugs);
 
-  if (!data) {
+  if (data) {
+    return pageMetadata({
+      title: `${data.collection.title} in Brampton`,
+      description: `${data.collection.description} Browse source-backed ${data.collection.title} previews and related collections at Metro Tiles & Flooring.`,
+      path: productCollectionPath(data.product.slug, collectionSlugs),
+      image: data.collection.image,
+      keywords: [
+        `${data.collection.title} Brampton`,
+        `${data.product.title} collection`,
+        ...(data.product.seoKeywords?.slice(0, 3) ?? []),
+        "Metro Tiles and Flooring catalog",
+      ],
+    });
+  }
+
+  const productDetail = getLiveProductDetailData(category, collectionSlugs);
+
+  if (!productDetail) {
     return {};
   }
 
+  const contextTitle =
+    productDetail.collection?.title ?? productDetail.productCategory.title;
+
   return pageMetadata({
-    title: `${data.collection.title} in Brampton`,
-    description: `${data.collection.description} Browse source-backed ${data.collection.title} previews and related collections at Metro Tiles & Flooring.`,
-    path: productCollectionPath(data.product.slug, collectionSlugs),
-    image: data.collection.image,
+    title: `${productDetail.liveProduct.name} ${contextTitle} in Brampton`,
+    description: `View ${productDetail.liveProduct.name}, a source-backed ${contextTitle} selection from Metro Tiles & Flooring's live catalog for showroom comparison and quote requests.`,
+    path: productDetail.currentPath,
+    image: productDetail.liveProduct.image,
     keywords: [
-      `${data.collection.title} Brampton`,
-      `${data.product.title} collection`,
-      ...(data.product.seoKeywords?.slice(0, 3) ?? []),
+      `${productDetail.liveProduct.name} Brampton`,
+      `${contextTitle} products`,
+      ...(productDetail.productCategory.seoKeywords?.slice(0, 3) ?? []),
       "Metro Tiles and Flooring catalog",
     ],
   });
@@ -86,6 +118,266 @@ function relatedServiceLinks(productSlug: string) {
     }));
 }
 
+function getLiveProductDetailData(categorySlug: string, routeSlugs: string[]) {
+  const productSlug = routeSlugs.at(-1);
+
+  if (!productSlug) {
+    return null;
+  }
+
+  const collectionSlugs = routeSlugs.slice(0, -1);
+  const productCategory = getProduct(categorySlug);
+
+  if (!productCategory) {
+    return null;
+  }
+
+  const trailData = collectionSlugs.length
+    ? getProductCollectionTrail(categorySlug, collectionSlugs)
+    : null;
+
+  if (collectionSlugs.length && !trailData) {
+    return null;
+  }
+
+  const liveProduct = getLiveProductForRoute(
+    categorySlug,
+    collectionSlugs,
+    productSlug
+  );
+
+  if (!liveProduct) {
+    return null;
+  }
+
+  return {
+    collection: trailData?.collection,
+    collectionSlugs,
+    currentPath: productCollectionPath(categorySlug, routeSlugs),
+    liveProduct,
+    parentPath: collectionSlugs.length
+      ? productCollectionPath(categorySlug, collectionSlugs)
+      : `/products/${categorySlug}`,
+    productCategory,
+    trail: trailData?.trail ?? [],
+  };
+}
+
+type LiveProductDetailData = NonNullable<
+  ReturnType<typeof getLiveProductDetailData>
+>;
+
+function LiveProductDetailPage({ detail }: { detail: LiveProductDetailData }) {
+  const {
+    collection,
+    collectionSlugs,
+    currentPath,
+    liveProduct,
+    parentPath,
+    productCategory,
+    trail,
+  } = detail;
+  const contextTitle = collection?.title ?? productCategory.title;
+  const primaryCategory = liveProduct.categories[0]?.name ?? contextTitle;
+  const relatedProducts = getLiveProductsForRoute(
+    productCategory.slug,
+    collectionSlugs
+  )
+    .filter((item) => item.id !== liveProduct.id)
+    .slice(0, 4);
+  const breadcrumbs = [
+    { label: "Home", href: "/" },
+    { label: "Products", href: "/products" },
+    { label: productCategory.title, href: `/products/${productCategory.slug}` },
+    ...trail.map((item, index) => ({
+      label: item.title,
+      href: productCollectionPath(
+        productCategory.slug,
+        collectionSlugs.slice(0, index + 1)
+      ),
+    })),
+    { label: liveProduct.name, href: currentPath },
+  ];
+  const webPageDescription = `Source-backed ${contextTitle} product from Metro's live catalog for showroom comparison and quote requests.`;
+
+  return (
+    <main className="min-h-screen bg-[#faf9f6] text-stone-950">
+      <JsonLd
+        data={breadcrumbJsonLd(
+          breadcrumbs.map((item) => ({ name: item.label, path: item.href }))
+        )}
+      />
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "WebPage",
+          name: `${liveProduct.name} at ${site.name}`,
+          description: webPageDescription,
+          url: absoluteUrl(currentPath),
+          isPartOf: {
+            "@type": "WebSite",
+            name: site.name,
+            url: site.url,
+          },
+          primaryImageOfPage: {
+            "@type": "ImageObject",
+            url: absoluteUrl(liveProduct.image),
+          },
+        }}
+      />
+
+      <SiteHeader />
+
+      <section className="bg-[#faf9f6] py-12 sm:py-16">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <Breadcrumbs items={breadcrumbs} />
+          <div className="mt-10 grid gap-10 lg:grid-cols-[minmax(0,1.08fr)_minmax(360px,0.92fr)] lg:items-start">
+            <div className="overflow-hidden rounded-[6px] border border-stone-200 bg-white shadow-[0_28px_90px_rgba(50,44,35,0.08)]">
+              <div className="relative aspect-square bg-stone-100 sm:aspect-[5/4]">
+                <Image
+                  src={liveProduct.image}
+                  alt={liveProduct.name}
+                  fill
+                  sizes="(min-width: 1024px) 56vw, 100vw"
+                  className="object-cover"
+                  priority
+                />
+              </div>
+            </div>
+
+            <div className="lg:pt-6">
+              <p className="text-xs font-semibold uppercase tracking-[0.36em] text-teal-800">
+                Source product
+              </p>
+              <h1 className="mt-4 max-w-2xl text-5xl font-semibold leading-[0.98] tracking-normal text-stone-950 sm:text-6xl lg:text-7xl">
+                {liveProduct.name}
+              </h1>
+              <p className="mt-6 max-w-xl text-lg leading-8 text-stone-600">
+                {liveProduct.name} is listed in Metro&apos;s live catalog under{" "}
+                {contextTitle}. Use this page to confirm the look, save the
+                selection, and request showroom guidance before ordering.
+              </p>
+
+              <div className="mt-8 flex flex-wrap gap-2">
+                {[primaryCategory, productCategory.title, "Live catalog"].map(
+                  (tag) => (
+                    <span
+                      key={tag}
+                      className="rounded-full border border-stone-200 bg-white px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-stone-600"
+                    >
+                      {tag}
+                    </span>
+                  )
+                )}
+              </div>
+
+              <div className="mt-8 grid gap-3 sm:grid-cols-2">
+                <Link
+                  href="/quote"
+                  className="flex h-12 items-center justify-center rounded-[4px] bg-stone-950 px-5 text-xs font-semibold uppercase tracking-[0.16em] text-white transition hover:bg-teal-900"
+                >
+                  Get quote
+                </Link>
+                <a
+                  href={site.phoneHref}
+                  className="flex h-12 items-center justify-center rounded-[4px] border border-stone-300 bg-white px-5 text-xs font-semibold uppercase tracking-[0.16em] text-stone-900 transition hover:border-teal-900 hover:text-teal-900"
+                >
+                  Call now
+                </a>
+                <Link
+                  href={parentPath}
+                  className="flex h-12 items-center justify-center rounded-[4px] border border-stone-300 bg-white px-5 text-xs font-semibold uppercase tracking-[0.16em] text-stone-900 transition hover:border-teal-900 hover:text-teal-900 sm:col-span-2"
+                >
+                  Back to collection
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <CatalogSnapshot
+        eyebrow="Product guide"
+        title={`${liveProduct.name}, ready for showroom comparison.`}
+        description={`Metro lists this selection in the current ${contextTitle} source catalog. Confirm finish, dimensions, availability, and installation fit with the Brampton showroom team before ordering.`}
+        tags={[
+          contextTitle,
+          productCategory.title,
+          primaryCategory,
+          "Brampton showroom",
+          "Quote ready",
+        ]}
+        stats={[
+          {
+            label: "Source",
+            value: "Live",
+            detail: "Pulled from Metro's current catalog snapshot.",
+          },
+          {
+            label: "Category",
+            value: productCategory.title,
+            detail: `Part of Metro's ${productCategory.title.toLowerCase()} showroom catalog.`,
+          },
+          {
+            label: "Next step",
+            value: "Quote",
+            detail:
+              "Share the product name with Metro to confirm availability and fit.",
+          },
+        ]}
+      />
+
+      <FeatureList
+        title={`How to review ${liveProduct.name}`}
+        items={[
+          "Compare the finish in showroom lighting",
+          "Confirm current availability before planning installation",
+          "Bring room photos, measurements, or design references",
+          "Ask Metro about coordinating materials and matching finishes",
+        ]}
+      />
+
+      {relatedProducts.length ? (
+        <section className="bg-white py-16 sm:py-20">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <SectionIntro
+              eyebrow="Related source products"
+              title={`More from ${contextTitle}.`}
+              description="Continue comparing nearby selections from the same source-backed Metro catalog area."
+            />
+            <div className="mt-10">
+              <LiveProductGrid items={relatedProducts} />
+            </div>
+          </div>
+        </section>
+      ) : null}
+
+      <FAQSection faqs={productCategory.faqs} />
+      <RelatedLinks
+        title="Continue browsing"
+        links={[
+          {
+            label: contextTitle,
+            href: parentPath,
+            description: `Return to the ${contextTitle} catalog page.`,
+          },
+          {
+            label: productCategory.title,
+            href: `/products/${productCategory.slug}`,
+            description: `Browse the full ${productCategory.title.toLowerCase()} category.`,
+          },
+          ...relatedServiceLinks(productCategory.slug),
+        ]}
+      />
+      <ContactCTA
+        title={`Ask Metro about ${liveProduct.name}.`}
+        description="Share this selection with Metro's showroom team to compare finishes, confirm availability, and request a quote."
+      />
+      <SiteFooter />
+    </main>
+  );
+}
+
 export default async function ProductCollectionPage({
   params,
 }: ProductCollectionPageProps) {
@@ -93,7 +385,13 @@ export default async function ProductCollectionPage({
   const data = getProductCollectionTrail(category, collectionSlugs);
 
   if (!data) {
-    notFound();
+    const productDetail = getLiveProductDetailData(category, collectionSlugs);
+
+    if (!productDetail) {
+      notFound();
+    }
+
+    return <LiveProductDetailPage detail={productDetail} />;
   }
 
   const { product, collection, trail } = data;

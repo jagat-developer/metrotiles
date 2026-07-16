@@ -6,7 +6,7 @@ import type {
   ProductCollection,
   Service,
 } from "@/lib/data";
-import type { LiveCatalogProduct } from "@/lib/liveCatalog";
+import { liveProductPath, type LiveCatalogProduct } from "@/lib/liveCatalog";
 
 export function ProductGrid({ products }: { products: ProductCategory[] }) {
   return (
@@ -203,13 +203,18 @@ export function LiveProductGrid({
       <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {visibleItems.map((item) => {
           const primaryCategory = item.categories[0]?.name ?? "Live catalog";
+          const detailsHref = liveProductPath(item);
 
           return (
             <article
               key={item.id}
               className="group flex min-h-full flex-col overflow-hidden rounded-[6px] border border-stone-200 bg-white shadow-[0_18px_55px_rgba(50,44,35,0.06)] transition hover:-translate-y-1 hover:border-teal-800 hover:shadow-[0_24px_70px_rgba(50,44,35,0.1)]"
             >
-              <div className="relative aspect-square overflow-hidden bg-stone-100">
+              <Link
+                href={detailsHref}
+                className="relative block aspect-square overflow-hidden bg-stone-100"
+                aria-label={`View ${item.name}`}
+              >
                 <Image
                   src={item.image}
                   alt={item.name}
@@ -220,13 +225,13 @@ export function LiveProductGrid({
                 <div className="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-stone-800 shadow-lg backdrop-blur">
                   Live catalog
                 </div>
-              </div>
+              </Link>
               <div className="flex flex-1 flex-col p-5">
                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-teal-800">
                   {primaryCategory}
                 </p>
-                <h3 className="mt-2 text-lg font-semibold leading-snug text-stone-950">
-                  {item.name}
+                <h3 className="mt-2 text-lg font-semibold leading-snug text-stone-950 transition group-hover:text-teal-900">
+                  <Link href={detailsHref}>{item.name}</Link>
                 </h3>
                 <p className="mt-3 text-sm leading-7 text-stone-600">
                   Source-backed selection currently listed in Metro&apos;s live
@@ -234,10 +239,10 @@ export function LiveProductGrid({
                 </p>
                 <div className="mt-auto flex flex-col gap-2 pt-5">
                   <Link
-                    href="/quote"
+                    href={detailsHref}
                     className="flex h-10 items-center justify-center rounded-[4px] bg-stone-950 px-4 text-xs font-semibold uppercase tracking-[0.14em] text-white transition hover:bg-teal-900"
                   >
-                    Ask about it
+                    View details
                   </Link>
                   <Link
                     href="/quote"

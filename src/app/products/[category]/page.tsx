@@ -94,9 +94,10 @@ export default async function ProductCategoryPage({ params }: ProductPageProps) 
   }
 
   const liveProducts = getLiveProductsForRoute(product.slug);
-  const sourcePreviewItems = product.collections?.length
-    ? []
-    : (product.featuredItems ?? []);
+  const childCollections = product.collections ?? [];
+  const hasChildCollections = childCollections.length > 0;
+  const showLiveProductsAsSource = !hasChildCollections && liveProducts.length > 0;
+  const sourcePreviewItems = hasChildCollections ? [] : (product.featuredItems ?? []);
   const liveProductItems = liveProducts.map((item) => ({
     name: item.name,
     description: `Source-backed ${product.title.toLowerCase()} selection listed in Metro's live catalog.`,
@@ -146,7 +147,7 @@ export default async function ProductCategoryPage({ params }: ProductPageProps) 
 
       <SiteHeader />
 
-      {product.collections?.length ? (
+      {hasChildCollections ? (
         <section className="bg-[#faf9f6] py-12 sm:py-16">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <Breadcrumbs items={breadcrumbs} />
@@ -160,9 +161,26 @@ export default async function ProductCategoryPage({ params }: ProductPageProps) 
             </div>
             <div className="mt-10">
               <CollectionGrid
-                collections={product.collections}
+                collections={childCollections}
                 basePath={`/products/${product.slug}`}
               />
+            </div>
+          </div>
+        </section>
+      ) : showLiveProductsAsSource ? (
+        <section className="bg-[#faf9f6] py-12 sm:py-16">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <Breadcrumbs items={breadcrumbs} />
+            <div className="mt-10">
+              <SectionIntro
+                eyebrow="Source catalog"
+                title={`Browse live ${product.title} products.`}
+                description="These products are pulled directly from Metro's current live catalog so this category starts with real showroom selections, imagery, and quote-ready detail pages."
+                headingLevel="h1"
+              />
+            </div>
+            <div className="mt-10">
+              <LiveProductGrid items={liveProducts} />
             </div>
           </div>
         </section>
@@ -185,27 +203,24 @@ export default async function ProductCategoryPage({ params }: ProductPageProps) 
         </section>
       ) : null}
 
-      {liveProducts.length ? (
+      {hasChildCollections && liveProducts.length ? (
         <section className="bg-white py-16 sm:py-20">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <SectionIntro
               eyebrow="Live product catalog"
               title={
                 product.collections?.length
-                  ? `Preview source-backed ${product.title} products.`
+                  ? `Browse source-backed ${product.title} products.`
                   : `Browse live ${product.title} products.`
               }
               description={
                 product.collections?.length
-                  ? "These cards are pulled from Metro's current live catalog as a quick preview before choosing a focused collection."
+                  ? "These cards are pulled from Metro's current live catalog so every source-backed product can be opened as a detail page before choosing a focused collection."
                   : "These product cards come from Metro's current live catalog so this page reflects the real showroom product list more closely."
               }
             />
             <div className="mt-10">
-              <LiveProductGrid
-                items={liveProducts}
-                limit={product.collections?.length ? 12 : undefined}
-              />
+              <LiveProductGrid items={liveProducts} />
             </div>
           </div>
         </section>
@@ -229,14 +244,15 @@ export default async function ProductCategoryPage({ params }: ProductPageProps) 
             detail: "Current source-catalog count for this Metro category.",
           },
           {
-            label: product.collections?.length ? "Collections" : "Previews",
+            label: hasChildCollections ? "Collections" : "Products",
             value: String(
-              product.collections?.length ??
-                (liveProducts.length || sourcePreviewItems.length)
+              hasChildCollections
+                ? childCollections.length
+                : liveProducts.length || sourcePreviewItems.length
             ),
-            detail: product.collections?.length
+            detail: hasChildCollections
               ? "Organized families to compare by brand, series, or product type."
-              : "Visible showroom styles to help start the selection process.",
+              : "Visible live catalog products to help start the selection process.",
           },
           {
             label: "Next step",

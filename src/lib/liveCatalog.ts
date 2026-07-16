@@ -11727,7 +11727,62 @@ export function getLiveProductsForRoute(
         (categoryPath) =>
           categoryPath === path || categoryPath.startsWith(`${path}/`)
       )
-    )
+    );
+}
+
+export function getLiveCatalogProducts() {
+  return liveCatalogProducts.map(productWithInferredCategories);
+}
+
+export function liveProductPath(product: LiveCatalogProduct) {
+  const [categoryPath] = productCategoryPaths(product);
+
+  if (!categoryPath) {
+    return "/products";
+  }
+
+  return `/products/${categoryPath}/${product.slug}`;
+}
+
+export function getLiveProductForRoute(
+  categorySlug: string,
+  collectionSlugs: string[],
+  productSlug: string
+) {
+  const path = routeKey(categorySlug, collectionSlugs);
+
+  return getLiveCatalogProducts().find(
+    (product) =>
+      product.slug === productSlug &&
+      product.categoryPaths.some((categoryPath) => categoryPath === path)
+  );
+}
+
+export function getAllLiveProductRoutePaths() {
+  const seen = new Set<string>();
+  const paths: Array<{ category: string; collection: string[] }> = [];
+
+  for (const product of getLiveCatalogProducts()) {
+    for (const categoryPath of product.categoryPaths) {
+      const [category, ...collections] = categoryPath.split("/");
+
+      if (!category) {
+        continue;
+      }
+
+      const collection = [...collections, product.slug];
+      const key = `${category}/${collection.join("/")}`;
+
+      if (seen.has(key)) {
+        continue;
+      }
+
+      seen.add(key);
+      paths.push({ category, collection });
+    }
+  }
+
+  return paths;
 }
 
 export const liveCatalogTotals = {
