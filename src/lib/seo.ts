@@ -30,6 +30,158 @@ export function absoluteUrl(path = "/") {
   return `${site.url}${cleanPath}`;
 }
 
+const coreLocalKeywords = [
+  "Metro Tiles and Flooring Brampton",
+  "Brampton showroom",
+  "renovation materials Brampton",
+  "home renovation materials Brampton",
+  "flooring and tiles GTA",
+];
+
+const serviceLocationKeywordGroups = [
+  {
+    match: ["tile", "tiles", "wall tile", "backsplash", "porcelain", "ceramic"],
+    keywords: [
+      "tiles Brampton",
+      "tiles store in Brampton",
+      "tile supplier Brampton",
+      "tile showroom Brampton",
+      "bathroom tiles Brampton",
+      "kitchen backsplash tile Brampton",
+      "tile quote Brampton",
+    ],
+  },
+  {
+    match: ["flooring", "floor", "floors", "installation"],
+    keywords: [
+      "flooring Brampton",
+      "flooring company Brampton",
+      "flooring contractor Brampton",
+      "flooring installation Brampton",
+      "flooring showroom Brampton",
+      "flooring stores Brampton",
+      "flooring quote Brampton",
+    ],
+  },
+  {
+    match: ["hardwood", "wood flooring", "engineered hardwood", "solid hardwood"],
+    keywords: [
+      "hardwood flooring Brampton",
+      "wood flooring Brampton",
+      "engineered hardwood flooring Brampton",
+      "solid hardwood flooring Brampton",
+      "hardwood flooring stores in Brampton",
+      "flooring showroom Brampton",
+    ],
+  },
+  {
+    match: ["vinyl", "spc", "waterproof"],
+    keywords: [
+      "vinyl flooring Brampton",
+      "luxury vinyl flooring Brampton",
+      "waterproof flooring Brampton",
+      "vinyl plank flooring Brampton",
+    ],
+  },
+  {
+    match: ["laminate"],
+    keywords: [
+      "laminate flooring Brampton",
+      "laminate flooring installation Brampton",
+      "brampton laminate flooring",
+    ],
+  },
+  {
+    match: ["bath", "bathroom", "vanity", "shower", "faucet", "tub"],
+    keywords: [
+      "bathroom renovation Brampton",
+      "bathroom renovation materials Brampton",
+      "bathroom vanities Brampton",
+      "bathroom fixtures Brampton",
+      "shower panels Brampton",
+      "bathroom renovation quote Brampton",
+    ],
+  },
+  {
+    match: ["construction", "renovation", "contractor", "material support"],
+    keywords: [
+      "home renovation in Brampton",
+      "home renovation contractors Brampton",
+      "construction materials Brampton",
+      "renovation material supplier Brampton",
+    ],
+  },
+  {
+    match: ["quote", "free quote", "request quote"],
+    keywords: [
+      "free quote Brampton",
+      "showroom quote Brampton",
+      "renovation material quote Brampton",
+    ],
+  },
+  {
+    match: ["deals", "promotion", "promotions", "sale"],
+    keywords: [
+      "flooring deals Brampton",
+      "tile sale Brampton",
+      "flooring promotion Brampton",
+      "renovation material deals Brampton",
+    ],
+  },
+];
+
+function uniqueKeywords(keywords: string[]) {
+  const seen = new Set<string>();
+
+  return keywords.filter((keyword) => {
+    const normalized = keyword.trim().toLowerCase();
+
+    if (!normalized || seen.has(normalized)) {
+      return false;
+    }
+
+    seen.add(normalized);
+    return true;
+  });
+}
+
+function escapeRegExp(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function matchesKeywordTerm(haystack: string, term: string) {
+  const normalizedTerm = term.toLowerCase().replace(/[-/]/g, " ").trim();
+  const pattern = new RegExp(
+    `\\b${escapeRegExp(normalizedTerm).replace(/\\s+/g, "\\s+")}\\b`
+  );
+
+  return pattern.test(haystack);
+}
+
+export function buildSeoKeywords({
+  title,
+  description,
+  path,
+  keywords = [],
+}: Pick<MetadataInput, "title" | "description" | "path" | "keywords">) {
+  const haystack = `${title} ${description} ${path}`
+    .toLowerCase()
+    .replace(/metro tiles\s*(?:&|and)\s*flooring'?s?/g, "metro")
+    .replace(/metro tiles/g, "metro")
+    .replace(/[-/]/g, " ");
+  const matchedServiceKeywords = serviceLocationKeywordGroups.flatMap((group) =>
+    group.match.some((term) => matchesKeywordTerm(haystack, term))
+      ? group.keywords
+      : []
+  );
+
+  return uniqueKeywords([
+    ...keywords,
+    ...matchedServiceKeywords,
+    ...coreLocalKeywords,
+  ]).slice(0, 24);
+}
+
 export function pageMetadata({
   title,
   description,
@@ -46,7 +198,7 @@ export function pageMetadata({
   return {
     title: fullTitle,
     description,
-    keywords,
+    keywords: buildSeoKeywords({ title, description, path, keywords }),
     alternates: {
       canonical: url,
     },

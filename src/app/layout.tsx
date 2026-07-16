@@ -3,7 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import Script from "next/script";
 import { JsonLd } from "@/components/JsonLd";
 import { site } from "@/lib/data";
-import { localBusinessJsonLd } from "@/lib/seo";
+import { buildSeoKeywords, localBusinessJsonLd } from "@/lib/seo";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -16,12 +16,15 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const rootTitle = "Flooring Brampton & Tile Showroom | Metro Tiles & Flooring";
+const rootDescription =
+  "Metro Tiles & Flooring is a Brampton flooring company and tile showroom for hardwood, vinyl, laminate, tile, bathroom renovation materials, and free quotes.";
+
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   applicationName: site.name,
-  title: "Flooring Brampton & Tile Showroom | Metro Tiles & Flooring",
-  description:
-    "Metro Tiles & Flooring is a Brampton flooring company and tile showroom for hardwood, vinyl, laminate, tile, bathroom renovation materials, and free quotes.",
+  title: rootTitle,
+  description: rootDescription,
   robots: {
     index: true,
     follow: true,
@@ -33,18 +36,23 @@ export const metadata: Metadata = {
       "max-video-preview": -1,
     },
   },
-  keywords: [
-    "Metro Tiles and Flooring",
-    "flooring brampton",
-    "tiles brampton",
-    "tiles store in brampton",
-    "hardwood flooring brampton",
-    "wood flooring brampton",
-    "vinyl flooring brampton",
-    "laminate flooring brampton",
-    "flooring company brampton",
-    "bathroom renovation materials",
-  ],
+  keywords: buildSeoKeywords({
+    title: rootTitle,
+    description: rootDescription,
+    path: "/",
+    keywords: [
+      "Metro Tiles and Flooring",
+      "flooring Brampton",
+      "tiles Brampton",
+      "tiles store in Brampton",
+      "hardwood flooring Brampton",
+      "wood flooring Brampton",
+      "vinyl flooring Brampton",
+      "laminate flooring Brampton",
+      "flooring company Brampton",
+      "bathroom renovation materials",
+    ],
+  }),
 };
 
 export default function RootLayout({
