@@ -1,15 +1,19 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useTransition } from "react";
+import { useRouter } from "next/navigation";
 
 const projectTypes = ["Tiles", "Flooring", "Furnishings", "Construction"];
 
 export function QuoteForm() {
-  const [submitted, setSubmitted] = useState(false);
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setSubmitted(true);
+    startTransition(() => {
+      router.push("/thank-you/");
+    });
   }
 
   return (
@@ -73,14 +77,15 @@ export function QuoteForm() {
 
       <button
         type="submit"
-        className="h-12 min-w-0 rounded-[4px] bg-stone-950 px-5 text-sm font-semibold uppercase tracking-[0.12em] text-white transition hover:bg-teal-900 focus:outline-none focus:ring-2 focus:ring-teal-700 focus:ring-offset-2"
+        disabled={isPending}
+        className="h-12 min-w-0 rounded-[4px] bg-stone-950 px-5 text-sm font-semibold uppercase tracking-[0.12em] text-white transition hover:bg-teal-900 focus:outline-none focus:ring-2 focus:ring-teal-700 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-70"
       >
-        Request quote
+        {isPending ? "Sending..." : "Request quote"}
       </button>
 
       <p className="min-h-5 min-w-0 text-sm text-stone-600" aria-live="polite">
-        {submitted
-          ? "Thanks. This v1 form is frontend-only; call or email Metro to send the request today."
+        {isPending
+          ? "Thanks. Redirecting you to the confirmation page."
           : "Frontend-only form for v1. Contact details are listed below for live inquiries."}
       </p>
     </form>

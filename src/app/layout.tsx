@@ -19,6 +19,7 @@ const geistMono = Geist_Mono({
 const rootTitle = "Flooring Brampton & Tile Showroom | Metro Tiles & Flooring";
 const rootDescription =
   "Metro Tiles & Flooring is a Brampton flooring company and tile showroom for hardwood, vinyl, laminate, tile, bathroom renovation materials, and free quotes.";
+const googleTagManagerId = "GTM-PLK9FM76";
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
@@ -66,6 +67,21 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
+        <noscript>
+          <iframe
+            src={`https://www.googletagmanager.com/ns.html?id=${googleTagManagerId}`}
+            height="0"
+            width="0"
+            style={{ display: "none", visibility: "hidden" }}
+          />
+        </noscript>
+        <Script id="google-tag-manager" strategy="beforeInteractive">
+          {`(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','${googleTagManagerId}');`}
+        </Script>
         <JsonLd data={localBusinessJsonLd()} />
         {children}
         <Script
