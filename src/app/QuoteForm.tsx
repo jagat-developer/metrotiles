@@ -1,26 +1,77 @@
 "use client";
 
-import { FormEvent, useTransition } from "react";
+import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 
 const projectTypes = ["Tiles", "Flooring", "Furnishings", "Construction"];
 
+type QuoteResponse = {
+  ok?: boolean;
+  error?: string;
+};
+
 export function QuoteForm() {
   const router = useRouter();
-  const [isPending, startTransition] = useTransition();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [statusMessage, setStatusMessage] = useState(
+    "Send your project details and Metro will follow up by phone or email."
+  );
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    startTransition(() => {
+
+    const form = event.currentTarget;
+    const formData = new FormData(form);
+
+    setIsSubmitting(true);
+    setStatusMessage("Sending your quote request...");
+
+    try {
+      const response = await fetch(form.action, {
+        method: "POST",
+        body: formData,
+        headers: {
+          Accept: "application/json",
+        },
+      });
+      const result = (await response.json().catch(() => ({}))) as QuoteResponse;
+
+      if (!response.ok || !result.ok) {
+        setStatusMessage(
+          result.error ??
+            "We could not send your request right now. Please call or email the showroom directly."
+        );
+        return;
+      }
+
+      form.reset();
       router.push("/thank-you/");
-    });
+    } catch {
+      setStatusMessage(
+        "We could not send your request right now. Please call or email the showroom directly."
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
     <form
+      action="/api/quote"
+      method="post"
       onSubmit={handleSubmit}
       className="grid w-full min-w-0 gap-4 rounded-[6px] border border-stone-200 bg-white p-5 shadow-[0_22px_70px_rgba(40,34,27,0.08)] sm:p-6"
     >
+      <label className="sr-only" aria-hidden="true">
+        Company website
+        <input
+          tabIndex={-1}
+          autoComplete="off"
+          name="companyWebsite"
+          className="hidden"
+        />
+      </label>
+
       <div className="grid min-w-0 gap-4 sm:grid-cols-2">
         <label className="grid min-w-0 gap-2 text-sm font-medium text-stone-900">
           Your name
@@ -77,16 +128,14 @@ export function QuoteForm() {
 
       <button
         type="submit"
-        disabled={isPending}
+        disabled={isSubmitting}
         className="h-12 min-w-0 rounded-[4px] bg-stone-950 px-5 text-sm font-semibold uppercase tracking-[0.12em] text-white transition hover:bg-teal-900 focus:outline-none focus:ring-2 focus:ring-teal-700 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-70"
       >
-        {isPending ? "Sending..." : "Request quote"}
+        {isSubmitting ? "Sending..." : "Request quote"}
       </button>
 
       <p className="min-h-5 min-w-0 text-sm text-stone-600" aria-live="polite">
-        {isPending
-          ? "Thanks. Redirecting you to the confirmation page."
-          : "Frontend-only form for v1. Contact details are listed below for live inquiries."}
+        {statusMessage}
       </p>
     </form>
   );
