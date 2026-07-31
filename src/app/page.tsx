@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { ServiceGrid } from "@/components/CardGrids";
 import { FAQSection } from "@/components/ContentSections";
 import { CustomerFeedbackCarousel } from "@/components/CustomerFeedbackCarousel";
+import { DirectionsLink } from "@/components/DirectionsLink";
 import { HomeProductShowcase } from "@/components/HomeProductShowcase";
 import { JsonLd } from "@/components/JsonLd";
 import { SectionIntro } from "@/components/SectionIntro";
@@ -183,14 +184,14 @@ export default function Home() {
                   </div>
                 ))}
               </div>
-              <a
+              <DirectionsLink
                 href={site.mapUrl}
                 target="_blank"
                 rel="noreferrer"
                 className="mt-8 inline-flex h-12 items-center justify-center rounded-[4px] bg-stone-950 px-6 text-sm font-semibold uppercase tracking-[0.14em] text-white transition hover:bg-teal-900"
               >
                 Plan your visit
-              </a>
+              </DirectionsLink>
             </div>
           </div>
         </div>

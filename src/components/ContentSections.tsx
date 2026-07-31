@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { DirectionsLink } from "@/components/DirectionsLink";
 import { FAQAccordion } from "@/components/FAQAccordion";
 import type { FAQ } from "@/lib/data";
 import { site } from "@/lib/data";
@@ -142,14 +143,14 @@ export function ContactCTA({
           >
             Get a free quote
           </Link>
-          <a
+          <DirectionsLink
             href={site.mapUrl}
             target="_blank"
             rel="noreferrer"
             className="flex h-12 items-center justify-center rounded-[4px] border border-stone-300 bg-white px-6 text-sm font-semibold uppercase tracking-[0.14em] text-stone-900 transition hover:border-teal-900 hover:text-teal-900"
           >
             Visit showroom
-          </a>
+          </DirectionsLink>
         </div>
       </div>
     </section>

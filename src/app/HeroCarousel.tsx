@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { DirectionsLink } from "@/components/DirectionsLink";
 
 const slides = [
   {
@@ -107,14 +108,14 @@ export function HeroCarousel() {
             >
               Call now
             </a>
-            <a
+            <DirectionsLink
               href="https://www.google.com/maps/search/?api=1&query=12%20-%2072%20Devon%20Road%2C%20Brampton%2C%20ON%20L6T%205B4"
               target="_blank"
               rel="noreferrer"
               className="flex h-12 items-center justify-center rounded-[4px] border border-white/35 bg-white/10 px-6 text-sm font-semibold uppercase tracking-[0.14em] text-white backdrop-blur transition hover:border-white hover:bg-white/18"
             >
               Visit showroom
-            </a>
+            </DirectionsLink>
           </div>
         </div>
 

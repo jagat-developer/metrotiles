@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import Script from "next/script";
 import { JsonLd } from "@/components/JsonLd";
 import { site } from "@/lib/data";
+import { GOOGLE_ADS_ID } from "@/lib/gtag";
 import { buildSeoKeywords, localBusinessJsonLd } from "@/lib/seo";
 import "./globals.css";
 
@@ -81,6 +82,17 @@ new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
 })(window,document,'script','dataLayer','${googleTagManagerId}');`}
+        </Script>
+        <Script
+          id="google-ads-gtag-src"
+          strategy="afterInteractive"
+          src={`https://www.googletagmanager.com/gtag/js?id=${GOOGLE_ADS_ID}`}
+        />
+        <Script id="google-ads-gtag-init" strategy="afterInteractive">
+          {`window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', '${GOOGLE_ADS_ID}');`}
         </Script>
         <JsonLd data={localBusinessJsonLd()} />
         {children}
